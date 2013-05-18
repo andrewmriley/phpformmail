@@ -320,11 +320,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   </tr>
   <tr> 
     <th align=right valign=top>Syntax: </th>
-    <td>To choose the URL they will end up at:<br>
-      <span class="code">&lt;input type=&quot;hidden&quot; name="redirect" value="http://your.host.com/to/file.html"&gt;</span> 
-      <p>To allow them to specify a URL they wish to travel to once the form is 
-        filled out:<br>
-        <span class="code">&lt;input type=&quot;text&quot; name="redirect"&gt;</span></p>
+    <td><span class="code">&lt;input type=&quot;hidden&quot; name="redirect" value="http://your.host.com/to/file.html"&gt;</span> 
     </td>
   </tr>
 </table>
@@ -339,12 +335,12 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     <td>This send the form results on to the redirect page (for further processing 
       by your own script). You must specify <a href="#redirect">redirect</a> and/or 
       <a href="#missing_fields_redirect">missing_fields_redirect</a> for this 
-      feature to work.</td>
+      feature to work. <b>NOTE: You must use the GET method for this feature to 
+      work.</b></td>
   </tr>
   <tr> 
     <th align=right valign=top>Syntax: </th>
-    <td>To choose the URL they will end up at:<br>
-      <span class="code">&lt;input type=&quot;hidden&quot; name="redirect_values" 
+    <td><span class="code">&lt;input type=&quot;hidden&quot; name="redirect_values" 
       value="true"&gt;</span> </td>
   </tr>
 </table>

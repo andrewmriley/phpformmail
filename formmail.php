@@ -1,6 +1,6 @@
 <?PHP
 
-define('VERSION','Classic v1.04.0');
+define('VERSION','Classic v1.04.1');
 
 #############################################################################
 # PHPFormMail - Something we've allways had...				    #
@@ -36,7 +36,7 @@ define('VERSION','Classic v1.04.0');
 # $referers allows forms to be located only on servers which are defined    #
 # in this field.							    #
 
-$referers = array('example.com','www.example.com');
+$referers = array('example.com', 'www.example.com');
 
 $valid_env = array('REMOTE_HOST', 'REMOTE_ADDR', 'REMOTE_USER', 'HTTP_USER_AGENT');
 
@@ -125,7 +125,7 @@ function check_recipients($recipients, $recipient_list){
 	while(list(,$recipient) = each($recipient_list)){
 		$recipient_domain = false;
 		while((list(,$domain) = each($recipients)) && ($recipient_domain == false)){
-			if(eregi('@' . $domain . '$', $recipient))
+			if(eregi('^[\.a-z0-9-]*@' . $domain . '$', $recipient))
 				$recipient_domain = true;
 		}
 		if($recipient_domain == false){
@@ -279,7 +279,7 @@ function sort_fields(){
  ****************************************************************/
 
 function send_mail(){
-	global $form, $invis_array, $valid_env, $in_array_func;
+	global $form, $invis_array, $valid_env, $in_array_func, $errors;
 	if(isset($form['realname']))
 		$realname = $form['realname'];
 	elseif(isset($form['firstname']) || isset($form['lastname']))
@@ -287,22 +287,22 @@ function send_mail(){
 		
 	$mailbody = "Below is the result of your feedback form.  It was submitted by\n";
 	if(isset($realname))
-		$mailbody.= $realname . ' (' . $form['email'] . ') on ' . date('F jS, Y') . "\n\n";
+		$mailbody.= $realname . ' (' . $form['email'] . ') on ' . date('F jS, Y') . "\r\n\r\n";
 	else
-		$mailbody.= $form['email'] . ' on ' . date('F jS, Y') . "\n\n";
+		$mailbody.= $form['email'] . ' on ' . date('F jS, Y') . "\r\n\r\n";
 
 	reset($form);
 	while (list($key,$val) = each($form)){
 		if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val)))
-			$mailbody .= $key . ': ' . $val . "\n";	
+			$mailbody .= $key . ': ' . $val . "\r\n";	
 	}
 
 	if (isset($form['env_report'])){
 		$temp_env_report = explode(',', $form['env_report']);
-		$mailbody .= "\n\n-------- Env Report --------\n";
+		$mailbody .= "\r\n\r\n-------- Env Report --------\r\n";
 		while(list(,$val) = each($temp_env_report)){
 			if($in_array_func($val,$valid_env))
-				$mailbody .= $val . ': ' . getenv($val) . "\n";
+				$mailbody .= $val . ': ' . getenv($val) . "\r\n";
 		}
 	}
 

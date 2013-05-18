@@ -1,3 +1,10 @@
+1.04.1 2002/07/22
+---------------------------
+! Fixed a possible exploit with the regex that checked e-mail addresses.
+! Added \r to \n in e-mail output.  Some users were having problems with just \n.
+! Fix Bug #583178 undeclared global $errors in send_mail().  This will stop the bug with blank pages being printed if there was an issue with the mail server.
+
+
 1.04.0 2002/06/08
 ---------------------------
 - Removed the ability to have empty referers.
@@ -17,14 +24,15 @@
 ! Removed default filling of realname to "Unknown Stranger" and added support for empty realnames so just the e-mail will show up instead of realname and e-mail address in emails.
 
 
-1.03.1
+1.03.1 2002/04/24
 ---------------------------
 + Fix a security problem with referers being easy to spoof.
 ! Fix all the undefined variable warnings when E_ALL is defined.
 ! Fixed a typo where I mispelled form.
 ! A few small changes with the logic of the program.
 
-1.03 2002/01/01
+
+1.03.0 2002/01/01
 ---------------------------
 + Added fields recipient_cc, recipient_bcc and priority.
 + Now the redirected "error" and "thank you" pages receive all the variables POST encoded for any third party scripts.
@@ -52,6 +60,7 @@
 ! Cleaned up the documentation.
 ! Made the documentation HTML 4.1 Transitional.
 ! Made the output of PHPFormMail XHTML 1.0. 
+
 
 0.03b 2001/05/25
 ---------------------------
