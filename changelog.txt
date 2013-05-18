@@ -1,3 +1,19 @@
+1.06.0 2003/02/01
+---------------------------
+! Made script play nicely with php4 that has globals turned off.
+! Fixed bug that would not display the proper error message if nothing is sent to the formmail.php (get or post).
++ Added ability to turn of referer checking (define).  This is currently BETA.
++ Added times to e-mail output (date string)
++ Added new field gmt_offset to accept +/-12 and properly reflect it in the time in the e-mail output. (Example, EST would be -5)
++ Added new field mail_newline with the options of 1, 2, 3 to allow the form creator to choose what type of newline to use in the email. 1 is the dfaefault at \n. 2 is \r and 3 is \r\n.
++ Changed email output in send_mail to allow for the newline changes.
+- Remeoved function fill_data() and all refs to it
+! Changed code syntax to PEAR standard (not tabs/pspaces yet)
+! Changed XHTML/CSS to be more complient.
+! Added _ fix for e-mail adddresses.
+! Added link to norton support for http_referer error (they appear to be the only software that has this issue).
+! Fixed it so you can now make checkbox fields required.
+
 1.05.0 2002/10/01
 ---------------------------
 + You can now have regular expressions in the $referers array.
