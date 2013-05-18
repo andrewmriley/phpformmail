@@ -1,0 +1,68 @@
+1.04.0 2002/06/08
+---------------------------
+- Removed the ability to have empty referers.
+! Changed " to ' where applicable (for speed).
++ Added an error message if there is no referer.
+! Changed default to NOT copy the field contents to thank you/error pages.
+! Update to allow the thank you page to properly follow show_blank_fields (like in the e-mail).
+! Fixed bug when having spaces, line breaks, etc between required field names.
+! Change "comming" to "coming".
+! Added automatic support for PHP3.  Script now detects the PHP version and calls the proper in_array().
+! Fixed a bug with PHP3 and NULL constants.
+! Changed the error logging when a bad recipient is found.  Each bad recipient should be logged if there is more than one in an execution.
++ Added error logging for "There is no recipient to send this to".
+- Removed the compile url function.  Replaced the function with get_env('QUERY_STRING').
+! Modified how stripslashes() was applied. Now it is only run once, on every variable.
++ Added a condition if realname is undefined to check to see if firstname or lastname exists and combines them to act as the "realname" for e-mail pourposes. :)
+! Removed default filling of realname to "Unknown Stranger" and added support for empty realnames so just the e-mail will show up instead of realname and e-mail address in emails.
+
+
+1.03.1
+---------------------------
++ Fix a security problem with referers being easy to spoof.
+! Fix all the undefined variable warnings when E_ALL is defined.
+! Fixed a typo where I mispelled form.
+! A few small changes with the logic of the program.
+
+1.03 2002/01/01
+---------------------------
++ Added fields recipient_cc, recipient_bcc and priority.
++ Now the redirected "error" and "thank you" pages receive all the variables POST encoded for any third party scripts.
+! Changed most attributes to use styles rather than html attributes.
+! Changed how colors were implemented. If they are not defined they will use the browser default instead of the old white/black color scheme.
+! Fixed a bug with the non-redirected "error" and "thank you" pages' title. They now properly reflect the page that is displaying.
+! Made CSS fully CSS compliant.
+! Misc. code cleanups
+
+
+1.02 2001/09/24
+---------------------------
++ Added value array fix (konrad@shortcircuit.be)
++ Added back in regular expression searching.
++ Defined the version number at the top of the PHP document and reference the define throughout the script.
++ Added a check for valid environmental variables to stop malicious attacks. 
+
+
+1.01 2001/09/10
+---------------------------
++ Added sort ability.
++ Made the environmental section variable.
+! Fixed a small bug with the apostrophes (screen output).
+- Removed most of the "for" loops.
+! Cleaned up the documentation.
+! Made the documentation HTML 4.1 Transitional.
+! Made the output of PHPFormMail XHTML 1.0. 
+
+0.03b 2001/05/25
+---------------------------
++ Add strip slashes to the output e-mail for those that need it.
+
+
+0.02b 2000/02/06
+---------------------------
++ Documentation added, fixed refers, and general code clean up.
+
+
+0.01b 2000/01/31
+---------------------------
++ This script was created.
