@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>PHPFormMail Readme</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <style type="text/css">
 <!--
 .littletext {  font-size: 10pt}
@@ -41,11 +42,14 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
         <ul>
           <li class="littletext"><a href="#subject">subject</a></li>
           <li class="littletext"><a href="#email">email</a></li>
+          <li class="littletext"><a href="#recipient_cc">recipient_cc</a><span class="newast">*</span></li>
+          <li class="littletext"><a href="#recipient_bcc">recipient_bcc</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#realname">realname</a></li>
           <li class="littletext"><a href="#redirect">redirect</a></li>
           <li class="littletext"><a href="#required">required</a></li>
           <li class="littletext"><a href="#sort">sort</a></li>
           <li class="littletext"><a href="#env_report">env_report</a></li>
+          <li class="littletext"><a href="#priority">priority</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#print_blank_fields">print_blank_fields</a></li>
           <li class="littletext"><a href="#title">title</a></li>
           <li class="littletext"><a href="#return_link_url">return_link_url</a></li>
@@ -61,13 +65,15 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
           <li class="littletext"><a href="#_regex">_regex</a><span class="newast">*</span></li>
         </ul>
       </li>
-      <li class="littletext"><a href="#html_notes">HTML Notes</a>
+      <li class="littletext"><a href="#html_notes">HTML Notes</a> 
         <ul>
-          <li class="littletext"><a href="#multiple">Multiple Results</a> (checkboxes and multiple lists)</li>
+          <li class="littletext"><a href="#multiple">Multiple Results</a> (checkboxes 
+            and multiple lists)</li>
         </ul>
       </li>
     </ul>
   </li>
+  <li><a href="#donations">Donations</a></li>
   <li><a href="#history">History</a></li>
 </ul>
 <hr size="1">
@@ -75,39 +81,22 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 <a name="copyright" class="title2">Copyright and Header</a> 
 <pre>
 #############################################################################
-# PHPFormMail - Something we've allways had...                              #
-# Copyright (c) 1999 Andrew Riley (boad@boaddrink.com)                      #
-#                                                                           #
-# This program is free software; you can redistribute it and/or             #
-# modify it under the terms of the GNU General Public License               #
-# as published by the Free Software Foundation; either version 2            #
-# of the License, or (at your option) any later version.                    #
-#                                                                           #
-# This program is distributed in the hope that it will be useful,           #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU General Public License for more details.                              #
-#                                                                           #
-# You should have received a copy of the GNU General Public License         #
-# along with this program; if not, write to the Free Software               #
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,    #
-# USA.                                                                      #
+# PHPFormMail - Something we've always had...                               #
+# Copyright (c) 1999 Andrew Riley (webmaster@boaddrink.com)                 #
+
 #                                                                           #
 #############################################################################
 #                                                                           #
-# If you run into any problems, pleas read the readme_formmail.txt.         #
-# If that does not help, check out http://www.boaddrink.com.                #
+# If you run into any problems, please check out http://www.boaddrink.com.  #
 #                                                                           #
-# For more info, please visit http://www.boaddrink.com or read the readme   #
-# file included.                                                            #
 #############################################################################
 </pre>
 <hr size="1">
 <a name="overview" class="title2"> Overview</a> 
-<p>PHPFormMail is a universal WWW form to E-mail gateway.. PHPFormMail's main 
+<p>PHPFormMail is a universal WWW form to e-mail gateway.. PHPFormMail's main 
   goal is to seamlessly take the place of it's PERL sister. All functions from 
-  PERL FormMail except for sort have an exact duplicate in PHPFormMail. PHPFormMail 
-  also has some extra functions built in, where ever you see a &quot;<span class="newast">*</span>&quot; 
+  PERL FormMail have an exact duplicate in PHPFormMail. PHPFormMail also has some 
+  extra functions built in, where ever you see a &quot;<span class="newast">*</span>&quot; 
   (red star) is a new feature. Special thanks to Matt's Script Archive (<a href="http://www.worldwidemart.com/scripts">http://www.worldwidemart.com/scripts</a>) 
   for if it wasn't for him/them/her (?) there would be no FormMail period. =:^)</p>
 <p>There is only one required form input tag which must be specified in order 
@@ -227,16 +216,83 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   </tr>
   <tr> 
     <th align=right valign=top>Description: </th>
-    <td>This form field will allow the user to specify their return e-mail address. 
-      If you want to be able to return e-mail to your user, I strongly suggest 
-      that you include this form field and allow them to fill it in. This will 
-      be put into the From: field of the message you receive. If you want to require 
-      an email address with valid syntax, add this field name to the 'required' 
-      field. </td>
+    <td> 
+      <p>This form field will allow the user to specify their return e-mail address. 
+        If you want to be able to return e-mail to your user, I strongly suggest 
+        that you include this form field and allow them to fill it in. This will 
+        be put into the From: field of the message you receive. If you want to 
+        require an email address with valid syntax, add this field name to the 
+        'required' field.</p>
+      <p>To send e-mail to more than one address, use commas to seperate the addresses.</p>
+    </td>
   </tr>
   <tr> 
-    <th align=right>Syntax: </th>
-    <td class="code">&lt;input type=&quot;text&quot; name="email"&gt;</td>
+    <th align=right valign="top">Syntax: </th>
+    <td> 
+      <p>Single Recipient:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="email" value=&quot;nobody@example.com&quot;&gt;</span></p>
+      <p>Multiple Recipients:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="email" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> 
+      </p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <th align=right><a name="recipient_cc">Field:</a> </th>
+    <td><tt>recipient_cc<span class="newast">*</span></tt></td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Description: </th>
+    <td> 
+      <p>This form field will allow you to carbon copy (CC) the the e-mail to 
+        the e-mail address listed. Use this only if you have the <a href="#email">email</a> 
+        field specified. This will cause two copies of the e-mail to be sent. 
+        The first to the address listed in the email field and the second to the 
+        address listed in the recipient_cc.</p>
+      <p>To send e-mail to more than one address, use commas to seperate the addresses.</p>
+    </td>
+  </tr>
+  <tr> 
+    <th align=right valign="top">Syntax: </th>
+    <td> 
+      <p>Single Recipient:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" 
+        value=&quot;nobody@example.com&quot;&gt;</span></p>
+      <p>Multiple Recipients:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" 
+        value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <th align=right><a name="recipient_bcc">Field:</a> </th>
+    <td><tt>recipient_bcc<span class="newast">*</span></tt></td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Description: </th>
+    <td> 
+      <p>This form field will allow you to blind carbon copy (BCC) the the e-mail 
+        to the e-mail address listed. To use this fields, you don't have to specify 
+        the <a href="#email">email</a> field. This will cause the e-mail to be 
+        sent but the recipients listed in the recipient_bcc without the recipients 
+        to see who it was sent to.</p>
+      <p>To send e-mail to more than one address, use commas to seperate the addresses.</p>
+    </td>
+  </tr>
+  <tr> 
+    <th align=right valign="top">Syntax: </th>
+    <td> 
+      <p>Single Recipient:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" 
+        value=&quot;nobody@example.com&quot;&gt;</span></p>
+      <p>Multiple Recipients:<br>
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" 
+        value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+    </td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -394,6 +450,27 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     <td>If you wanted to see the host making the request and the browser the user 
       is using in your our e-mail , you would put the following into your form: 
       <p class="code">&lt;input type=&quot;hidden&quot; name="env_report" value="REMOTE_HOST,HTTP_USER_AGENT"&gt;</p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <th align=right><a name="priority">Field:</a> </th>
+    <td><tt>priority<span class="newast">*</span></tt></td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Description: </th>
+    <td>priority allows you to modify the priority of the e-mail you will receive. 
+      3 is normail priority for an e-mail (default) and 1 is the highest priority.</td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Syntax: </th>
+    <td> 
+      <p>If you wish to have the highest priority:<br>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="priority" value="1"&gt;</span></p>
+      <p>If you wish to have the lowest priority (normal):<br>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="priority" value="3"&gt;</span></p>
     </td>
   </tr>
 </table>
@@ -648,7 +725,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   and displayed on the resulting page if you do not have the redirect field set. 
   There is no limit as to how many other form fields you can use with this form, 
   except the limits imposed by browsers and your server.</p>
-  <p>&nbsp;</p>
+<p>&nbsp;</p>
 <a name="html_notes" class="title3">HTML Notes</a> 
 <dl> 
   <dt>&nbsp; 
@@ -658,9 +735,22 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     process the field and print it out in a comma separated format. 
 </dl>
 <hr size="1">
-<p><BR>
-  <BR>
-  <a name="history" class="title2"> History</a></p>
+<br>
+<a name="donations" class="title2">Donations</a> 
+<p>As you know, most of the software I release is free, and will always be free. 
+  Keep in mind that this donation page isn't for me to profit, it's to allow me 
+  to continue developing free software and to keep boaddrink.com for you, the 
+  user. Please remember that this software is free for you to download and use 
+  but that doesn't mean it's not worth anything. You can donate any amount of 
+  money you wish... from $1 to $1,000,000. While a million dollars would be nice 
+  don't be pressured, any amount helps, even one dollar.</p>
+<p>If you wish to donate, please visit <a href="http://www.boaddrink.com/donate.php" target="_blank">http://www.boaddrink.com/donate.php</a></p>
+<p>Thanks,<br>
+  Andrew Riley</p>
+<hr size="1">
+<BR>
+<BR>
+<a name="history" class="title2"> History</a>
 <table border="0" cellspacing="0" cellpadding="5">
   <tr> 
     <td>Version</td>
@@ -668,8 +758,23 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
+    <td>1.03</td>
+    <td>2002/01/01</td>
+    <td>Added fields <a href="#recipient_cc">recipient_cc</a>, <a href="#recipient_bcc">recipient_bcc</a> 
+      and <a href="#priority">priority</a>.<br>
+      Now the redirected &quot;error&quot; and &quot;thank you&quot; pages receive 
+      all the variables POST encoded for any third party scripts.<br>
+      Changed most attributes to use styles rather than html attributes.<br>
+      Changed how colors were implemented. If they are not defined they will use 
+      the browser default instead of the old white/black color scheme.<br>
+      Fixed a bug with the non-redirected &quot;error&quot; and &quot;thank you&quot; 
+      pages' title. They now properly reflect the page that is displaying.<br>
+      Made CSS fully CSS compliant.<br>
+      Misc. code cleanups</td>
+  </tr>
+  <tr valign="top"> 
     <td>1.02</td>
-    <td>2001/9/24</td>
+    <td>2001/09/24</td>
     <td>Added value array fix (konrad@shortcircuit.be)<br>
       Added back in regular expression searching.<br>
       Defined the version number at the top of the PHP document and reference 
@@ -679,7 +784,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   </tr>
   <tr valign="top"> 
     <td>1.01</td>
-    <td>2001/9/10</td>
+    <td>2001/09/10</td>
     <td> Added sort ability.<br>
       Made the environmental section variable.<br>
       Fixed a small bug with the apostrophes (screen output).<br>
