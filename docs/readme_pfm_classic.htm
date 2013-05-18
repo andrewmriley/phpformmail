@@ -46,6 +46,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
           <li class="littletext"><a href="#recipient_bcc">recipient_bcc</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#realname">realname</a></li>
           <li class="littletext"><a href="#redirect">redirect</a></li>
+          <li><a href="#redirect_values" class="littletext">redirect_values</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#required">required</a></li>
           <li class="littletext"><a href="#sort">sort</a></li>
           <li class="littletext"><a href="#env_report">env_report</a></li>
@@ -74,7 +75,6 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     </ul>
   </li>
   <li><a href="#donations">Donations</a></li>
-  <li><a href="#history">History</a></li>
 </ul>
 <hr size="1">
 <br>
@@ -112,7 +112,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 <p>The PHPFormMail.php script does not have to be extensively configured in order 
   to work. There are only two variables in the script in which you will need to 
   modify.</p>
-<a name="necessary_vars" class="title3">Necessary Variable</a> 
+<a name="necessary_vars" class="title3">Necessary Variables</a> 
 <dl> 
   <dt>&nbsp; 
   <dt><a name="referers" class="code">$referers = array(&quot;boaddrink.com&quot;,&quot;216.92.77.123&quot;);</a> 
@@ -122,7 +122,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     when someone tries to fill out their form. By placing boaddrink in the $referers 
     array, this DOES NOT allow www.boaddrink.com, ftp.boaddrink.com, any other 
     http address with boaddrink.com in it. I included boaddrink.com's IP address 
-    to access this script as well, just to be on the safe side..<br>
+    to access this script as well, just to be on the safe side.<br>
     <br>
     Note: <b>The domains listed in the $referers array must also include the domain 
     that the e-mail is going to.</b><br>
@@ -136,7 +136,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     $referer array, even if the form isn't hosted on that domain. Rule of thumb, 
     include the domain name that is hosting the form AND include the domain name 
     of the recipients (This includes <a href="#recipient">recipient</a>, <a href="#recipient_cc">recipient_cc</a>, 
-    and <a href="recipient_bcc">recipient_bcc</a>).
+    and <a href="recipient_bcc">recipient_bcc</a>). 
 </dl>
 <dl> 
   <dt>&nbsp; 
@@ -146,37 +146,13 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
     The odds are you won't need to change these. For more information on environmental 
     variables, please see <a href="#env_report">env_report</a>. 
 </dl>
-<p>Your phpformmail program is now configured. </p>
-<p>Note: Users of PHP3 will need to uncomment the following lines:</p>
-<p class="code">/*function in_array($needle,$haystack){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$found = false;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (list($key,$val) = each ($haystack)){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($needle 
-  == $val){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$found 
-  = true;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return $found;<br>
-  }*/</p>
-<p>Will look like:</p>
-<p class="code">function in_array($needle,$haystack){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$found = false;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (list($key,$val) = each ($haystack)){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($needle 
-  == $val){<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$found 
-  = true;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return $found;<br>
-  }</p>
+<p>Your PHPFormMail is now configured. </p>
 <hr size="1">
 <br>
 <a name="form_config" class="title2">Form Configuration</a> 
 <p>The action of your form needs to point towards this script (obviously), and 
-  the method must be POST or GET in capital letters. Below is a list of form fields 
-  you can use and how to implement them. </p>
+  the method must be POST or GET. Below is a list of form fields you can use and 
+  how to implement them. </p>
 <a name="necessary_form_fields" class="title3"> Necessary Form Fields</a> 
 <p>There is only one form field that you must have in your form, for PHPFormMail 
   to work correctly. This is the recipient field. </p>
@@ -317,9 +293,13 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   </tr>
   <tr> 
     <th align=right valign=top>Description: </th>
-    <td>The realname form field will allow the user to input their real name. 
-      This field is useful for identification purposes and will also be put into 
-      the From: line of your message header. </td>
+    <td> 
+      <p>The realname form field will allow the user to input their real name. 
+        This field is useful for identification purposes and will also be put 
+        into the From: line of your message header.</p>
+      <p>Note: If realname does not exist as a field but firstname or lastname 
+        does, PHPFormMail will combine firstname and lastname to create the realname.</p>
+    </td>
   </tr>
   <tr> 
     <th align=right>Syntax: </th>
@@ -346,6 +326,26 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
         filled out:<br>
         <span class="code">&lt;input type=&quot;text&quot; name="redirect"&gt;</span></p>
     </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <th align=right><a name="redirect_values">Field:</a> </th>
+    <td><tt>redirect_values</tt></td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Description: </th>
+    <td>This send the form results on to the redirect page (for further processing 
+      by your own script). You must specify <a href="#redirect">redirect</a> and/or 
+      <a href="#missing_fields_redirect">missing_fields_redirect</a> for this 
+      feature to work.</td>
+  </tr>
+  <tr> 
+    <th align=right valign=top>Syntax: </th>
+    <td>To choose the URL they will end up at:<br>
+      <span class="code">&lt;input type=&quot;hidden&quot; name="redirect_values" 
+      value="true"&gt;</span> </td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -497,15 +497,15 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   <tr> 
     <th align=right valign=top>Description: </th>
     <td>print_blank_fields allows you to request that all form fields are printed 
-      in the return HTML, regardless of whether or not they were filled in. PHPFormMail 
-      defaults to turning this off, so that unused form fields aren't e-mailed. 
-    </td>
+      in the return HTML and e-mail, regardless of whether or not they were filled 
+      in. PHPFormMail defaults to turning this off, so that unused form fields 
+      aren't e-mailed. </td>
   </tr>
   <tr> 
     <th align=right valign=top>Syntax: </th>
     <td>If you want to print all blank fields:<br>
       <span class="code">&lt;input type=&quot;hidden&quot; name="print_blank_fields" 
-      value="1"&gt;</span></td>
+      value="true"&gt;</span></td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -762,70 +762,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 <p>Thanks,<br>
   Andrew Riley</p>
 <hr size="1">
-<BR>
-<BR>
-<a name="history" class="title2"> History</a>
-<table border="0" cellspacing="0" cellpadding="5">
-  <tr> 
-    <td>Version</td>
-    <td>Date</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr valign="top"> 
-    <td>1.03</td>
-    <td>2002/01/01</td>
-    <td>Added fields <a href="#recipient_cc">recipient_cc</a>, <a href="#recipient_bcc">recipient_bcc</a> 
-      and <a href="#priority">priority</a>.<br>
-      Now the redirected &quot;error&quot; and &quot;thank you&quot; pages receive 
-      all the variables POST encoded for any third party scripts.<br>
-      Changed most attributes to use styles rather than html attributes.<br>
-      Changed how colors were implemented. If they are not defined they will use 
-      the browser default instead of the old white/black color scheme.<br>
-      Fixed a bug with the non-redirected &quot;error&quot; and &quot;thank you&quot; 
-      pages' title. They now properly reflect the page that is displaying.<br>
-      Made CSS fully CSS compliant.<br>
-      Misc. code cleanups</td>
-  </tr>
-  <tr valign="top"> 
-    <td>1.02</td>
-    <td>2001/09/24</td>
-    <td>Added value array fix (konrad@shortcircuit.be)<br>
-      Added back in regular expression searching.<br>
-      Defined the version number at the top of the PHP document and reference 
-      the define throughout the script.<br>
-      Added a check for valid environmental variables to stop malicious attacks. 
-    </td>
-  </tr>
-  <tr valign="top"> 
-    <td>1.01</td>
-    <td>2001/09/10</td>
-    <td> Added sort ability.<br>
-      Made the environmental section variable.<br>
-      Fixed a small bug with the apostrophes (screen output).<br>
-      Removed most of the &quot;for&quot; loops.<br>
-      Cleaned up the documentation.<br>
-      Made the documentation HTML 4.1 Transitional.<br>
-      Made the output of PHPFormMail XHTML 1.0. </td>
-  </tr>
-  <tr valign="top"> 
-    <td>0.03b</td>
-    <td>2001/05/25</td>
-    <td>Add strip slashes to the output e-mail for those that need it.</td>
-  </tr>
-  <tr valign="top"> 
-    <td>0.02b</td>
-    <td>2000/02/06</td>
-    <td>Documentation added, fixed refers, and general code clean up.</td>
-  </tr>
-  <tr valign="top"> 
-    <td>0.01b</td>
-    <td>2000/01/31</td>
-    <td>This script was created.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<hr size="1">
 <span class="littletext">Copyright 1999 Andrew Riley</span> 
-<p align="right"><a href="http://validator.w3.org/check/referer" target="_blank"><img border="0" src="images/valid-html401.png" alt="Valid HTML 4.01!" height="31" width="88"></a></p>
+<p align="right"><img border="0" src="images/valid-html401.png" alt="Valid HTML 4.01!" height="31" width="88"></p>
 </body>
 </html>

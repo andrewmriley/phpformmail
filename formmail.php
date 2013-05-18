@@ -1,6 +1,6 @@
 <?PHP
 
-define("VERSION","Classic v1.03.1");
+define('VERSION','Classic v1.04.0');
 
 #############################################################################
 # PHPFormMail - Something we've allways had...				    #
@@ -36,56 +36,49 @@ define("VERSION","Classic v1.03.1");
 # $referers allows forms to be located only on servers which are defined    #
 # in this field.							    #
 
-$referers = array("boaddrink.com","www.boaddrink.com","boaddrink.org","www.boaddrink.org");
+$referers = array('example.com','www.example.com');
 
-$valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");
+$valid_env = array('REMOTE_HOST', 'REMOTE_ADDR', 'REMOTE_USER', 'HTTP_USER_AGENT');
 
 #############################################################################
 
 $recipients = $referers;
 $errors = array();
-$invis_array = array("recipient","subject","required","redirect",
-		     "print_blank_fields","env_report","sort",
-		     "missing_fields_redirect","title","bgcolor",
-		     "text_color","link_color","alink_color",
-		     "vlink_color","background","subject","title",
-		     "link","css","return_link_title",
-		     "return_link_url","recipient_cc","recipient_bcc",
-                     "priority");
-
+$invis_array = array('recipient','subject','required','redirect',
+		     'print_blank_fields','env_report','sort',
+		     'missing_fields_redirect','title','bgcolor',
+		     'text_color','link_color','alink_color',
+		     'vlink_color','background','subject','title',
+		     'link','css','return_link_title',
+		     'return_link_url','recipient_cc','recipient_bcc',
+                     'priority','redirect_values');
 
 /****************************************************************
- * Due to PHP3 not having a function to find if an		*
- * element is in an array, I created a native version		*
- * of in_array that mimics PHP4's in_array function.		*
- * You sould only uncomment this function if you use		*
- * PHP3.  If you uncomment it in PHP4, you'll get errors.	*
+ * fake_in_array() is only used in PHP3 since PHP4 has a native	*
+ * in_array.  Depending on what version of PHP you are running	*
+ * the script will determine what is the best function to run 	*
+ * --- THER IS NO LONGER ANY REASON TO DELETE THIS FUNCTION ---	*
+ * Function renamed in 1.04.0					*
  ****************************************************************/
 
-// START removing the /* and */ for PHP 3.X
-
-/*function in_array($needle,$haystack){
+function fake_in_array($needle,$haystack){
 	$found = false;
 	while (list($key,$val) = each ($haystack)){
-		if ($needle == $val){
+		if ($needle == $val)
 			$found = true;
-		}
 	}
 	return $found;
-}*/
-
-// STOP removing the /* and */ for PHP 3.X
-
+}
 
 /****************************************************************
  * fill_data() is a gernic function to assign data.		*
  ****************************************************************/
 
-function fill_data(&$from, $to, $tag = NULL){
+function fill_data(&$from, $to, $tag = ''){
 	if(!isset($from))
 		$from = $to;
-	if(isset($tag))
-		$from = " " . $tag . ": " . $from . ";";
+	if($tag != '')
+		$from = ' ' . $tag . ': ' . $from . ';';
 }
 
 
@@ -97,42 +90,51 @@ function fill_data(&$from, $to, $tag = NULL){
  ****************************************************************/
 
 function check_referer($referers){
+	global $errors, $in_array_func;
 	if (count($referers)){
-		$temp = explode("/",getenv("HTTP_REFERER"));
-		$found = in_array($temp[2],$referers);
-		if (!$found){
-			global $errors;
-			$errors[] = "You are comming from an unauthorized domain.";
-			error_log("[PHPFormMail] Illegal Referer. (".getenv("HTTP_REFERER").")", 0);
+		if(getenv('HTTP_REFERER')){
+			$temp = explode('/', getenv('HTTP_REFERER'));
+			$found = $in_array_func($temp[2], $referers);
+			if (!$found){
+				$errors[] = 'You are coming from an unauthorized domain.';
+				error_log('[PHPFormMail] Illegal Referer. (' . getenv('HTTP_REFERER') . ')', 0);
+			}
+			return $found;
+		} else {
+			$errors[] = 'Sorry, but I cannot figure out who sent you here.  Your browser is not sending an HTTP_REFERER.';
+			error_log('[PHPFormMail] HTTP_REFERER not defined. Browser: ' . getenv('HTTP_USER_AGENT') . '; Client IP: ' . getenv('REMOTE_ADDR') . '; Request Method: ' . getenv('REQUEST_METHOD') . ';', 0);
+			return false;
 		}
-		return $found;
-	} else
-		return true; //Not a good idea, if empty, it will allow it.
+	} else {
+		$errors[] = 'You have no referers defined.  All submissions will be denied.';
+		error_log('[PHPFormMail] You have no referers defined.  All submissions will be denied.', 0);
+		return false;
+	}
 }
 
 /****************************************************************
- * check_recipeints() breaks up the recipents e-mail addresses	*
+ * check_recipients() breaks up the recipents e-mail addresses	*
  * and then crossrefrences the domains that are legal referers	*
- * Added 1.3.1							*
+ * Function added in 1.3.1					*
  ****************************************************************/
 
 function check_recipients($recipients, $recipient_list){
+	global $errors;
 	$recipients_ok = true;
-	$recipient_list = explode(",", $recipient_list);
+	$recipient_list = explode(',', $recipient_list);
 	while(list(,$recipient) = each($recipient_list)){
 		$recipient_domain = false;
 		while((list(,$domain) = each($recipients)) && ($recipient_domain == false)){
-			if(eregi("@" . $domain . "$",$recipient))
+			if(eregi('@' . $domain . '$', $recipient))
 				$recipient_domain = true;
 		}
-		if($recipient_domain == false)
+		if($recipient_domain == false){
 			$recipients_ok = false;
+			error_log('[PHPFormMail] Illegal Recipient: ' . $recipient . ' from ' . getenv('HTTP_REFERER'), 0);
+		}
 	}
-	if (!$recipients_ok){
-		global $errors;
-		$errors[] = "You are trying to send mail to a domain that is not allowed.";
-		error_log("[PHPFormMail] Illegal Recipient: " . $recipient . " from " . getenv("HTTP_REFERER"), 0);
-	}
+	if (!$recipients_ok)
+		$errors[] = 'You are trying to send mail to a domain that is not allowed. (Check your recipients)';
 	return $recipients_ok;
 }
 
@@ -152,9 +154,14 @@ function check_recipients($recipients, $recipient_list){
  ****************************************************************/
 
 function decode_vars(){
-	$request = "HTTP_" . getenv("REQUEST_METHOD") . "_VARS";
+	$request = 'HTTP_' . getenv('REQUEST_METHOD') . '_VARS';
 	global $$request;
-	return $$request;
+	while(list($key, $val) = each($$request)){
+		if(is_array($val))
+			$val = implode(', ',$val);
+		$output[$key] = stripslashes($val);
+	}
+	return $output;
 }
 
 
@@ -170,12 +177,14 @@ function decode_vars(){
 function error($errors){
 	global $form, $natural_form;
 	if ($errors){
-		if (isset($form["missing_fields_redirect"])){
-			$args = compile_url_args($natural_form);
-			Header(  "Location: ". $form["missing_fields_redirect"] . $args);
+		if (isset($form['missing_fields_redirect'])){
+			if(isset($form['redirect_values']))
+				header('Location: ' . $form['missing_fields_redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
+			else
+				header('Location: ' . $form['missing_fields_redirect'] . "\r\n");
 			exit;
 		} else {
-			fill_data($form["title"],"PHPFormMail - Error");
+			fill_data($form['title'],'PHPFormMail - Error');
 			$output = "<p class=\"title\">The following errors were found:</p>\n";
 			while (list(,$val) = each ($errors)) {
 				$output .= $val . "<br />\n";
@@ -186,35 +195,6 @@ function error($errors){
 		}
 	}
 }
-
-
-/****************************************************************
- * compile_url_args() is used to create the arguments from	*
- * $form for sending to the "Thank you" and redirected "Error"	*
- * pages. This allows for the "Thank you/Error" pages to	*
- * properly report errors and if needed, record the values to a	*
- * different medium.						*
- * Function added in 1.03.0					*
- ****************************************************************/
-
-function compile_url_args($form){
-	$output = "?";
-	while(list($key,$val) = each($form)){
-		if(is_array($val)){
-
-			// I'm not happy with my array support. With the
-			// way I currently have it, it can only handle
-			// 1D arrays.
-
-			while(list($key1,$val1) = each($val)){
-				$output .= urlencode($key ."[" . $key1 . "]") . "=" . urlencode($val1) . "&";
-			}
-		} else
-			$output .= urlencode($key) . "=" . urlencode($val) . "&";
-	}
-	return substr($output,0,-1);
-}
-
 
 /****************************************************************
  * check_required() is the function that checks all required	*
@@ -228,21 +208,23 @@ function compile_url_args($form){
 function check_required(){
 	global $form, $errors, $invis_array;
 	$problem = true;
-	if ((!$form["recipient"]) && (!$form["recipient_bcc"])) {
+	if ((!isset($form['recipient'])) && (!isset($form['recipient_bcc']))) {
 		$problem = false;
-		$errors[] = "There is no recipient to send this mail to.";
+		$errors[] = 'There is no recipient to send this mail to.';
+		error_log('[PHPFormMail] There is no recipient defined from ' . getenv('HTTP_REFERER'), 0);
 	}
-	if ($form["required"]){
-		$required = split(",",$form["required"]);
+	if (isset($form['required'])){
+		$required = split(',', $form['required']);
 		while(list(,$val) = each($required)){
-			$regex_field_name = $val . "_regex";
+			$val = trim($val);
+			$regex_field_name = $val . '_regex';
 			if(!$form[$val]){
 				$problem = false;
-				$errors[] = "Required value (<b>" . $val . "</b>) is missing.";
+				$errors[] = 'Required value (<b>' . $val . '</b>) is missing.';
 			} else if(isset($form[$regex_field_name])){
 				if(!eregi($form[$regex_field_name],$form[$val])){
 					$problem = false;
-					$errors[] = "Required value (<b>" . $val . "</b>) has an invalid format.";
+					$errors[] = 'Required value (<b>' . $val . '</b>) has an invalid format.';
 				}
 				$invis_array[] = $regex_field_name;
 			}
@@ -271,15 +253,15 @@ function check_required(){
 function sort_fields(){
 	global $form;
 	switch($form["sort"]){
-		case "alphabetic":
-		case "alpha":		ksort($form);
+		case 'alphabetic':
+		case 'alpha':		ksort($form);
 					break;
-		case "ralphabetic":
-		case "ralpha":		krsort($form);
+		case 'ralphabetic':
+		case 'ralpha':		krsort($form);
 					break;
-		default:		if($col = strpos($form["sort"],":")){
-						$form["sort"] = substr($form["sort"],($col + 1));
-						$temp_sort_arr = explode(",",$form["sort"]);
+		default:		if($col = strpos($form['sort'],':')){
+						$form['sort'] = substr($form['sort'],($col + 1));
+						$temp_sort_arr = explode(',', $form['sort']);
 						for($x = 0; $x < count($temp_sort_arr); $x++){
 							$out[$temp_sort_arr[$x]] = $form[$temp_sort_arr[$x]];
 							unset($form[$temp_sort_arr[$x]]);
@@ -297,47 +279,58 @@ function sort_fields(){
  ****************************************************************/
 
 function send_mail(){
-	global $form, $invis_array, $valid_env;
+	global $form, $invis_array, $valid_env, $in_array_func;
+	if(isset($form['realname']))
+		$realname = $form['realname'];
+	elseif(isset($form['firstname']) || isset($form['lastname']))
+		$realname = trim($form['firstname'] . ' ' . $form['lastname']);
+		
 	$mailbody = "Below is the result of your feedback form.  It was submitted by\n";
-	$mailbody.= $form["realname"]. " (" .$form["email"].") on " . date("F dS, Y") ."\n\n";
+	if(isset($realname))
+		$mailbody.= $realname . ' (' . $form['email'] . ') on ' . date('F jS, Y') . "\n\n";
+	else
+		$mailbody.= $form['email'] . ' on ' . date('F jS, Y') . "\n\n";
 
 	reset($form);
 	while (list($key,$val) = each($form)){
-		if ((!in_array($key,$invis_array)) && ((isset($form["print_blank_fields"])) || ($val))){
-			if(is_array($val))
-				$val = implode(", ", $val);
-			$mailbody .= $key . ": " . stripslashes($val) . "\n";
+		if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val)))
+			$mailbody .= $key . ': ' . $val . "\n";	
+	}
+
+	if (isset($form['env_report'])){
+		$temp_env_report = explode(',', $form['env_report']);
+		$mailbody .= "\n\n-------- Env Report --------\n";
+		while(list(,$val) = each($temp_env_report)){
+			if($in_array_func($val,$valid_env))
+				$mailbody .= $val . ': ' . getenv($val) . "\n";
 		}
 	}
 
-	if (isset($form["env_report"])){
-		$temp_env_report = explode(",",$form["env_report"]);
-		$mailbody .= "\n\n-------- Env Report --------\n";
-		while(list(,$val) = each($temp_env_report)){
-			if(in_array($val,$valid_env))
-				$mailbody .= $val . ": " . getenv($val) . "\n";
-		}
-	}
+	if(!isset($form['recipient']))
+		$form['recipient'] = '';
 
 	// Append lines to $mail_header that you wish to be
 	// added to the headers of the e-mail. (SMTP Format
 	// with newline char ending each line)
 
-	$mail_header = "From: " .$form["email"]. " (" .$form["realname"]. ")\n";
-	if(isset($form["recipient_cc"]))
-		$mail_header .= "Cc: " . $form["recipient_cc"] . "\n";
-	if(isset($form["recipient_bcc"]))
-		$mail_header .= "Bcc: " . $form["recipient_bcc"] . "\n";
-	if(isset($form["priority"]))
-		$mail_header .= "X-Priority: " . $form["priority"] . "\n";
+	$mail_header = 'From: ' . $form['email'];
+	if(isset($realname))
+		$mail_header .= ' (' . $realname . ')';
+	$mail_header .= "\n";
+	if(isset($form['recipient_cc']))
+		$mail_header .= 'Cc: ' . $form["recipient_cc"] . "\n";
+	if(isset($form['recipient_bcc']))
+		$mail_header .= 'Bcc: ' . $form['recipient_bcc'] . "\n";
+	if(isset($form['priority']))
+		$mail_header .= 'X-Priority: ' . $form['priority'] . "\n";
 	else
 		$mail_header .= "X-Priority: 3\n";
-	$mail_header .= "X-Mailer: PHPFormMail " . VERSION . " (http://www.boaddrink.com)\n";
+	$mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . " (http://www.boaddrink.com)\n";
 
-	$mail_status = mail($form["recipient"],$form["subject"],$mailbody,$mail_header);
+	$mail_status = mail($form['recipient'], $form['subject'], $mailbody, $mail_header);
 	if(!$mail_status){
-		 $errors[] = "Message could not be sent due to an error while trying to send the mail.";
-                 error_log("[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.");
+		 $errors[] = 'Message could not be sent due to an error while trying to send the mail.';
+                 error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
 	}
 	return $mail_status;
 }
@@ -359,19 +352,20 @@ function output_html($body){
 	print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">\n";
 	print "<head>\n";
 	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\" />\n";
+	print "  <meta name=\"robots\" content=\"noindex,nofollow\" />\n";
 	print "  <title>" . $form["title"] . "</title>\n";
 	print "  <style type=\"text/css\">\n";
-	print "    BODY {" . $form["bgcolor"] . $form["text_color"] . "}\n";
-	if(isset($form["link_color"]))
-		print "    A {" . $form["link_color"] . $form["bgcolor"] . "}\n";
-	if(isset($form["alink_color"]))
-		print "    A:active {" . $form["alink_color"] . $form["bgcolor"] . "}\n";
-	if(isset($form["vlink_color"]))
-		print "    A:visited {" . $form["vlink_color"] . $form["bgcolor"] . "}\n";
+	print "    BODY {" . $form['bgcolor'] . $form['text_color'] . "}\n";
+	if(isset($form['link_color']))
+		print "    A {" . $form['link_color'] . $form['bgcolor'] . "}\n";
+	if(isset($form['alink_color']))
+		print "    A:active {" . $form['alink_color'] . $form['bgcolor'] . "}\n";
+	if(isset($form['vlink_color']))
+		print "    A:visited {" . $form['vlink_color'] . $form['bgcolor'] . "}\n";
 	print "    .title {font-size: 12pt; font-weight: bold}\n";
 	print "  </style>\n";
-	if(isset($form["css"]))
-		print "  <link rel=\"stylesheet\" href=\"" . $form["css"] . "\">\n";
+	if(isset($form['css']))
+		print "  <link rel=\"stylesheet\" href=\"" . $form['css'] . "\">\n";
 	print "</head>\n\n";
 	print "<body>\n";
 	print "<!-- PHPFormMail " . VERSION . " from http://www.boaddrink.com -->\n";
@@ -383,54 +377,57 @@ function output_html($body){
 	print "</html>";
 }
 
-// $form is array we work with.
-// $natural_form is the array that does not get changed.
-// This is for redirects that need the data in an origional form.
 
-$form = $natural_form = decode_vars();
+// Determine (based on the PHP version) if we should use the native
+// PHP4 in_array or the coded fake_in_array
 
-fill_data($form["bgcolor"],"#FFFFFF","background-color");
-fill_data($form["text_color"],"#000000","color");
+if(phpversion() >= '4.0.0')
+	$in_array_func = 'in_array';
+else
+	$in_array_func = 'fake_in_array';
 
-fill_data($form["link_color"],NULL,"color");
-fill_data($form["alink_color"],NULL,"color");
-fill_data($form["vlink_color"],NULL,"color");
+$form = decode_vars();
+
+fill_data($form['bgcolor'], '#FFFFFF', 'background-color');
+fill_data($form['text_color'], '#000000', 'color');
+
+fill_data($form['link_color'], '', 'color');
+fill_data($form['alink_color'], '', 'color');
+fill_data($form['vlink_color'], '', 'color');
 
 check_referer($referers);
-if(isset($form["recipient"]))
-	check_recipients($recipients,$form["recipient"]);
-if(isset($form["recipient_cc"]))
-	check_recipients($recipients,$form["recipient_cc"]);
-if(isset($form["recipient_bcc"]))
-	check_recipients($recipients,$form["recipient_bcc"]);
+if(isset($form['recipient']))
+	check_recipients($recipients, $form['recipient']);
+if(isset($form['recipient_cc']))
+	check_recipients($recipients, $form['recipient_cc']);
+if(isset($form['recipient_bcc']))
+	check_recipients($recipients, $form['recipient_bcc']);
 check_required();
 
 if(!$errors){
-	fill_data($form["subject"],"WWW Form Submission");
-	fill_data($form["email"],"email@example.com");
-	fill_data($form["realname"],"Unknown Stranger");
+	fill_data($form['subject'],'WWW Form Submission');
+	fill_data($form['email'],'email@example.com');
 
-	if(isset($form["sort"]))
+	if(isset($form['sort']))
 		sort_fields();
 
 	if(send_mail()){
-		if (isset($form["redirect"])){
-			$args = compile_url_args($natural_form);
-			Header("Location: " . $form["redirect"] . $args);
+		if (isset($form['redirect'])){
+			if(isset($form['redirect_values']))
+				header('Location: ' . $form['redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
+			else
+				header('Location: ' . $form['redirect'] . "\r\n");
 			exit;
 		} else {
-			fill_data($form["title"],"PHPFormMail - Form Results");
+			fill_data($form['title'],'PHPFormMail - Form Results');
 			$output = "<p class=\"title\">The following information has been submitted:</p>\n";
 			reset($form);
 			while(list($key,$val) = each($form)){
-				if (!in_array($key,$invis_array)){
-					if(is_array($val))
-						$val = implode(", ", $val);
-					$output .= "<b>" . htmlspecialchars($key) . ":</b> " . htmlspecialchars(stripslashes($val)) . "<br />\n";
-				}
+				if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val)))
+					$output .= '<b>' . htmlspecialchars($key) . ':</b> ' . htmlspecialchars($val) . "<br />\n";
 			}
-			if(isset($form["return_link_url"]) && isset($form["return_link_title"]))
-				$output .= "<p><a href=\"" . $form["return_link_url"] . "\">". $form["return_link_title"] . "</a></p>\n";
+			if(isset($form['return_link_url']) && isset($form['return_link_title']))
+				$output .= '<p><a href="' . $form["return_link_url"] . '">'. $form["return_link_title"] . "</a></p>\n";
 			output_html($output);
 		}
 	}
