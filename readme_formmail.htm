@@ -1,0 +1,551 @@
+<html>
+ 
+<head>
+<title>PHPFormMail Readme</title>
+</head>
+ 
+<body bgcolor=#FFFFFF text=#000000">
+<p><font size="+3">PHPFormMail</font></p>
+<ul>
+  <li><a href="#copyright">Copyright and Header</a> 
+  <li><a href="#overview">Overview</a> 
+  <li><a href="#setting_up">Setting Up the PHPFormMail Script</a> 
+    <ul>
+      <li><a href="#necessary_vars">Necessary Variables</a> 
+        <ul>
+          <font size=-1>
+          <li><a href="#referers">$referers</a> 
+          </font> 
+        </ul>
+    </ul>
+  <li><a href="#form_config">Form Configuration</a> 
+    <ul>
+      <li><a href="#necessary_form_fields">Necessary Form Fields</a> 
+        <ul>
+          <font size=-1> 
+          <li><a href="#recipient">recipient</a> 
+          </font> 
+        </ul>
+      <li><a href="#optional_form_fields">Optional Form Fields</a> 
+        <ul>
+          <font size=-1> 
+          <li><a href="#subject">subject</a> 
+          <li><a href="#email">email</a> 
+          <li><a href="#realname">realname</a> 
+          <li><a href="#redirect">redirect</a> 
+          <li><a href="#required">required</a> 
+          <li><a href="#env_report">env_report</a> 
+          <li><a href="#print_blank_fields">print_blank_fields</a> 
+          <li><a href="#title">title</a> 
+          <li><a href="#return_link_url">return_link_url</a> 
+          <li><a href="#return_link_title">return_link_title</a> 
+          <li><a href="#missing_fields_redirect">missing_fields_redirect</a> 
+          <li><a href="#background">background</a> 
+          <li><a href="#bgcolor">bgcolor</a> 
+          <li><a href="#text_color">text_color</a> 
+          <li><a href="#link_color">link_color</a> 
+          <li><a href="#vlink_color">vlink_color</a> 
+          <li><a href="#alink_color">alink_color</a> 
+          <li><a href="#css">css</a><font color="#FF0000">* </font>
+          </font>
+        </ul>
+      
+    </ul>
+  <li><a href="#history">History</a> 
+</ul>
+<hr size="1">
+<br>
+<a name="copyright"> 
+<h2>Copyright and Header</h2>
+</a> <font size=-1> 
+<pre>#############################################################################
+#                                                        PHPFormMail v0.02b #
+# PHPFormMail - Something we've allways had...                              #
+# Copyright (c) 1999 Andrew Riley (boad@boaddrink.com)                      #
+#                                                                           #
+# This program is free software; you can redistribute it and/or             #
+# modify it under the terms of the GNU General Public License               #
+# as published by the Free Software Foundation; either version 2            #
+# of the License, or (at your option) any later version.                    #
+#                                                                           #
+# This program is distributed in the hope that it will be useful,           #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU General Public License for more details.                              #
+#                                                                           #
+# You should have received a copy of the GNU General Public License         #
+# along with this program; if not, write to the Free Software               #
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,    #
+# USA.                                                                      #
+#                                                                           #
+#############################################################################
+#                                                                           #
+# If you run into any problems, pleas read the readme_formmail.txt.         #
+# If that does not help, check out http://www.boaddrink.com.                #
+#                                                                           #
+# For more info, please visit http://www.boaddrink.com or read the readme   #
+# file included.                                                            #
+#############################################################################
+
+</pre>
+</font> 
+<hr size="1">
+<a name="overview"> 
+<h2>Overview</h2>
+</a> 
+<p>PHPFormMail is a universal WWW form to E-mail gateway.. PHPFormMail's main 
+  goal is to seamlessly take the place of it's PERL sister. All functions from 
+  PERL FormMail except for sort have an exact duplicate in PHPFormMail. PHPFormMail 
+  also has some extra functions built in, where ever you see a &quot;<font color="#FF0000">*</font>&quot; 
+  (red star) is a new feature. Special thanks to Matt's Script Archive (<a href="http://www.worldwidemart.com/scripts">http://www.worldwidemart.com/scripts</a>) 
+  for if it wasn't for him/them/her (?) there would be no FormMail period. =:^)</p>
+<p>There is only one required form input tag which must be specified in order 
+  for this script to work with your existing forms. Other hidden configuration 
+  fields can also be used to enhance the operation of FormMail on your site. </p>
+<p> The anonymous WWW user must have the ability to read/execute the PHPFormMail.php 
+  script. If you have problems running a script with the .php extension, try .php3, 
+  .phtm, .phtml. If those do not work, please check with your system administrator 
+  for more help on running PHP scripts. </p>
+<hr size="1">
+<br>
+<a name="setting_up"> 
+<h2>Setting Up the PHPFormMail Script</h2>
+</a> 
+<ul>
+  <p>The PHPFormMail.php script does not have to be extensively configured in 
+    order to work. There is only one variable in the script in which you will 
+    need to modify. </p>
+  <a name="necessary_vars"> 
+  <h3>Necessary Variable</h3>
+  </a> 
+  <dl> 
+    <dt>&nbsp; 
+    <dt><a name="referers"><b><tt>$referers = ('boaddrink.com','216.92.77.123');</tt></b></a> 
+    <dd>This array allows you to define the domains that you will allow forms 
+      to reside on and use your PHPFormMail script. If a user tries to put a form 
+      on another server, that is not in your list, they will receive an error 
+      message when someone tries to fill out their form. By placing boaddrink 
+      in the $referers array, this DOES NOT allow www.boaddrink.com, ftp.boaddrink.com, 
+      any other http address with boaddrink.com in it. I included boaddrink.com's 
+      IP address to access this script as well, just to be on the safe side.. 
+  </dl>
+  <p>Your phpformmail program is now configured. </p>
+</ul>
+<hr size="1">
+<br>
+<a name="form_config"> 
+<h2>Form Configuration</h2>
+</a> 
+<ul>
+  <p>The action of your form needs to point towards this script (obviously), and 
+    the method must be POST or GET in capital letters. Below is a list of form 
+    fields you can use and how to implement them. </p>
+  <a name="necessary_form_fields"> 
+  <h3>Necessary Form Fields</h3>
+  </a> 
+  <p>There is only one form field that you must have in your form, for PHPFormMail 
+    to work correctly. This is the recipient field. </p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="recipient">Field:</a> </th>
+      <td><tt>recipient</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field allows you to specify to whom you wish for your form 
+        results to be mailed. Most likely you will want to configure this option 
+        as a hidden form field with a value equal to that of your e-mail address. 
+      </td>
+    </tr>
+    <tr> 
+      <th align=right>Syntax: </th>
+      <td><tt>&lt;input type=&quot;hidden&quot; name="recipient" value="email@your.host.com"&gt;</tt></td>
+    </tr>
+  </table>
+  <hr size="1">
+  <br>
+  <a name="optional_form_fields"> 
+  <h3>Optional Form Fields</h3>
+  </a> 
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="subject">Field:</a> </th>
+      <td><tt>subject</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>The subject field will allow you to specify the subject that you wish 
+        to appear in the e-mail that is sent to you after this form has been filled 
+        out. If you do not have this option turned on, then the script will default 
+        to a message subject: WWW Form Submission </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td> 
+        <p>If you wish to choose what the subject is:<br>
+          <tt>&lt;input type=&quot;hidden&quot; name="subject" value="Your Subject"&gt;</tt></p>
+        <p>To allow the user to choose a subject:<br>
+          <tt>&lt;input type=&quot;text&quot; name="subject"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="email">Field:</a> </th>
+      <td><tt>email</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field will allow the user to specify their return e-mail address. 
+        If you want to be able to return e-mail to your user, I strongly suggest 
+        that you include this form field and allow them to fill it in. This will 
+        be put into the From: field of the message you receive. If you want to 
+        require an email address with valid syntax, add this field name to the 
+        'required' field. </td>
+    </tr>
+    <tr> 
+      <th align=right>Syntax: </th>
+      <td><tt>&lt;input type=&quot;text&quot; name="email"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="realname">Field:</a> </th>
+      <td><tt>realname</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>The realname form field will allow the user to input their real name. 
+        This field is useful for identification purposes and will also be put 
+        into the From: line of your message header. </td>
+    </tr>
+    <tr> 
+      <th align=right>Syntax: </th>
+      <td><tt>&lt;input type=&quot;text&quot; name="realname"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="redirect">Field:</a> </th>
+      <td><tt>redirect</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>If you wish to redirect the user to a different URL, rather than having 
+        them see the default response to the fill-out form, you can use this hidden 
+        variable to send them to a pre-made HTML page. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>To choose the URL they will end up at:<br>
+        <tt>&lt;input type=&quot;hidden&quot; name="redirect" value="http://your.host.com/to/file.html"&gt;</tt> 
+        <p>To allow them to specify a URL they wish to travel to once the form 
+          is filled out:<br>
+          <tt>&lt;input type=&quot;text&quot; name="redirect"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="required">Field:</a> </th>
+      <td><tt>required</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>You can now require for certain fields in your form to be filled in 
+        before the user can successfully submit the form. Simply place all field 
+        names that you want to be mandatory into this field. If the required fields 
+        are not filled in, the user will be notified of what they need to fill 
+        in, and a link back to the form they just submitted will be provided. 
+        <p>To use a customized error page, see '<a href="#missing_fields_redirect">missing_fields_redirect</a>' 
+        </p>
+      </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>If you want to require that they fill in the email and phone fields 
+        in your form, so that you can reach them once you have received the mail, 
+        use a syntax like: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="required" value="email,phone"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="env_report">Field:</a> </th>
+      <td><tt>env_report</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>Allows you to have Environment variables included in the e-mail message 
+        you receive after a user has filled out your form. Useful if you wish 
+        to know what browser they were using, what domain they were coming from 
+        or any other attributes associated with environment variables. The following 
+        is a short list of valid environment variables that might be useful: 
+        <pre>
+
+REMOTE_HOST     - Sends the hostname making the 
+                  request.
+REMOTE_ADDR     - Sends the IP address of the
+                  remote host making the request.
+REMOTE_USER     - If server supports authentication
+                  and script is protected, this is
+                  the username they have
+                  authenticated as. *This is not
+                  usually set.*
+HTTP_USER_AGENT - The browser the client is using
+                  to send the request.  </pre>
+      </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>If you wanted to see the env_report in your e-mail , you would put the 
+        following into your form: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="env_report" value="1"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="print_blank_fields">Field:</a> </th>
+      <td><tt>print_blank_fields</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>print_blank_fields allows you to request that all form fields are printed 
+        in the return HTML, regardless of whether or not they were filled in. 
+        PHPFormMail defaults to turning this off, so that unused form fields aren't 
+        e-mailed. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>If you want to print all blank fields:<br>
+        <tt>&lt;input type=&quot;hidden&quot; name="print_blank_fields" value="1"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="title">Field:</a> </th>
+      <td><tt>title</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field allows you to specify the title and header that will 
+        appear on the resulting page if you do not specify a redirect URL. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>If you wanted a title of 'Feedback Form Results': 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="title" value="Feedback 
+          Form Results"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="return_link_url">Field:</a> </th>
+      <td><tt>return_link_url</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This field allows you to specify a URL that will appear, as return_link_title, 
+        on the following report page. This field will not be used if you have 
+        the redirect field set, but it is useful if you allow the user to receive 
+        the report on the following page, but want to offer them a way to get 
+        back to your main page. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td> <tt>&lt;input type=&quot;hidden&quot; name="return_link_url" value="http://your.host.com/main.html"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="return_link_title">Field:</a> </th>
+      <td><tt>return_link_title</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td> 
+        <p>This is the title that will be used to link the user back to the page 
+          you specify with <a href="#return_link_url">return_link_url</a>. The 
+          two fields will be shown on the resulting form page as:</p>
+      </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td> <tt>&lt;input type=&quot;hidden&quot; name="return_link_title" value="Back 
+        to Main Page"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="missing_fields_redirect">Field:</a> </th>
+      <td><tt>missing_fields_redirect</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field allows you to specify a URL that users will be redirected 
+        to if there are fields listed in the required form field that are not 
+        filled in. This is so you can customize an error page instead of displaying 
+        the default.</td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td> <tt>&lt;input type=&quot;hidden&quot; name="missing_fields_redirect" 
+        value="http://your.host.com/error.html"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="background">Field:</a> </th>
+      <td><tt>background</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field allow you to specify a background image that will appear 
+        if you do not have the redirect field set. This image will appear as the 
+        background to the form results page. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td> <tt>&lt;input type=&quot;hidden&quot; name="background" value="http://your.host.xxx/image.gif"&gt;</tt></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="bgcolor">Field:</a> </th>
+      <td><tt>bgcolor</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This form field allow you to specify a bgcolor for the form results 
+        page in much the way you specify a background image. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>For a background color of White: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="bgcolor" value="#FFFFFF"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="text_color">Field:</a> </th>
+      <td><tt>text_color</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>This field works in the same way as bgcolor, except that it will change 
+        the color of your text. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>For a text color of Black: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="text_color" value="#000000"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="link_color">Field:</a> </th>
+      <td><tt>link_color</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>Changes the color of links on the resulting page. Works in the same 
+        way as text_color. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>For a link color of Red: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="link_color" value="#FF0000"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="vlink_color">Field:</a> </th>
+      <td><tt>vlink_color</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>Changes the color of visited links on the resulting page. Works exactly 
+        the same as link_color. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>For a visited link color of Blue: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="vlink_color" value="#0000FF"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="alink_color">Field:</a> </th>
+      <td><tt>alink_color</tt> </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Description: </th>
+      <td>Changes the color of active links on the resulting page. Works exactly 
+        the same as link_color. </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>For a active link color of Blue: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="alink_color" value="#0000FF"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table border="0" cellpadding="5" cellspacing="0" width="90%">
+    <tr bgcolor="#CCCCCC"> 
+      <th align=right><a name="css">Field:</a> </th>
+      <td><tt>css<font color="#FF0000">*</font></tt></td>
+    </tr>
+    <tr> 
+      <th align="right">Description: </th>
+      <td>Allows for the results/error page to link to a Cascading Style Sheet 
+        (css). </td>
+    </tr>
+    <tr> 
+      <th align=right valign=top>Syntax: </th>
+      <td>To link to main.css: 
+        <p><tt>&lt;input type=&quot;hidden&quot; name="css" value="http://your.host.xxx/main.css"&gt;</tt></p>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>Any other form fields that appear in your script will be mailed back to you 
+    and displayed on the resulting page if you do not have the redirect field 
+    set. There is no limit as to how many other form fields you can use with this 
+    form, except the limits imposed by browsers and your server.</p>
+</ul>
+<hr size="1">
+<BR>
+<BR>
+<a name="history"> 
+<h2>History</h2>
+</a> 
+<p>Version 0.02b 2000/02/06 - Documentation added, fixed refers, and general code 
+  clean up.<br>
+  Version 0.01b 2000/01/31 - This script was created.<br>
+</p>
+</body>
+</html>
