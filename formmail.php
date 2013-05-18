@@ -1,6 +1,6 @@
 <?PHP
 
-define("VERSION","Classic v1.03.0");
+define("VERSION","Classic v1.03.1");
 
 #############################################################################
 # PHPFormMail - Something we've allways had...				    #
@@ -36,12 +36,13 @@ define("VERSION","Classic v1.03.0");
 # $referers allows forms to be located only on servers which are defined    #
 # in this field.							    #
 
-$referers = array("example.com","www.example.com");
+$referers = array("boaddrink.com","www.boaddrink.com","boaddrink.org","www.boaddrink.org");
 
 $valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");
 
 #############################################################################
 
+$recipients = $referers;
 $errors = array();
 $invis_array = array("recipient","subject","required","redirect",
 		     "print_blank_fields","env_report","sort",
@@ -80,10 +81,10 @@ $invis_array = array("recipient","subject","required","redirect",
  * fill_data() is a gernic function to assign data.		*
  ****************************************************************/
 
-function fill_data(&$from,$to,$tag=""){
-	if(!$from)
+function fill_data(&$from, $to, $tag = NULL){
+	if(!isset($from))
 		$from = $to;
-	if($tag)
+	if(isset($tag))
 		$from = " " . $tag . ": " . $from . ";";
 }
 
@@ -109,6 +110,31 @@ function check_referer($referers){
 		return true; //Not a good idea, if empty, it will allow it.
 }
 
+/****************************************************************
+ * check_recipeints() breaks up the recipents e-mail addresses	*
+ * and then crossrefrences the domains that are legal referers	*
+ * Added 1.3.1							*
+ ****************************************************************/
+
+function check_recipients($recipients, $recipient_list){
+	$recipients_ok = true;
+	$recipient_list = explode(",", $recipient_list);
+	while(list(,$recipient) = each($recipient_list)){
+		$recipient_domain = false;
+		while((list(,$domain) = each($recipients)) && ($recipient_domain == false)){
+			if(eregi("@" . $domain . "$",$recipient))
+				$recipient_domain = true;
+		}
+		if($recipient_domain == false)
+			$recipients_ok = false;
+	}
+	if (!$recipients_ok){
+		global $errors;
+		$errors[] = "You are trying to send mail to a domain that is not allowed.";
+		error_log("[PHPFormMail] Illegal Recipient: " . $recipient . " from " . getenv("HTTP_REFERER"), 0);
+	}
+	return $recipients_ok;
+}
 
 /****************************************************************
  * decode_vars() is used to assign all of the variables passed	*
@@ -144,7 +170,7 @@ function decode_vars(){
 function error($errors){
 	global $form, $natural_form;
 	if ($errors){
-		if ($form["missing_fields_redirect"]){
+		if (isset($form["missing_fields_redirect"])){
 			$args = compile_url_args($natural_form);
 			Header(  "Location: ". $form["missing_fields_redirect"] . $args);
 			exit;
@@ -277,14 +303,14 @@ function send_mail(){
 
 	reset($form);
 	while (list($key,$val) = each($form)){
-		if ((!in_array($key,$invis_array)) && (($form["print_blank_fields"]) || ($val))){
+		if ((!in_array($key,$invis_array)) && ((isset($form["print_blank_fields"])) || ($val))){
 			if(is_array($val))
 				$val = implode(", ", $val);
 			$mailbody .= $key . ": " . stripslashes($val) . "\n";
 		}
 	}
 
-	if ($form["env_report"]){
+	if (isset($form["env_report"])){
 		$temp_env_report = explode(",",$form["env_report"]);
 		$mailbody .= "\n\n-------- Env Report --------\n";
 		while(list(,$val) = each($temp_env_report)){
@@ -298,21 +324,22 @@ function send_mail(){
 	// with newline char ending each line)
 
 	$mail_header = "From: " .$form["email"]. " (" .$form["realname"]. ")\n";
-	if($form["recipient_cc"])
+	if(isset($form["recipient_cc"]))
 		$mail_header .= "Cc: " . $form["recipient_cc"] . "\n";
-	if($form["recipient_bcc"])
+	if(isset($form["recipient_bcc"]))
 		$mail_header .= "Bcc: " . $form["recipient_bcc"] . "\n";
-	if($form["priority"])
+	if(isset($form["priority"]))
 		$mail_header .= "X-Priority: " . $form["priority"] . "\n";
 	else
-		$mail_header .= "X-Priority: 3\n"; 
+		$mail_header .= "X-Priority: 3\n";
 	$mail_header .= "X-Mailer: PHPFormMail " . VERSION . " (http://www.boaddrink.com)\n";
 
 	$mail_status = mail($form["recipient"],$form["subject"],$mailbody,$mail_header);
 	if(!$mail_status){
-		 $errors[] = "Mail could not be sent due to an error while trying to send the mail.";
+		 $errors[] = "Message could not be sent due to an error while trying to send the mail.";
                  error_log("[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.");
 	}
+	return $mail_status;
 }
 
 
@@ -334,16 +361,16 @@ function output_html($body){
 	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\" />\n";
 	print "  <title>" . $form["title"] . "</title>\n";
 	print "  <style type=\"text/css\">\n";
-	print "    BODY {" . $form["bgcolor"] . $form["text_color"] . $form["background"] . "}\n";
-	if($form["link_color"])
+	print "    BODY {" . $form["bgcolor"] . $form["text_color"] . "}\n";
+	if(isset($form["link_color"]))
 		print "    A {" . $form["link_color"] . $form["bgcolor"] . "}\n";
-	if($form["alink_color"])
+	if(isset($form["alink_color"]))
 		print "    A:active {" . $form["alink_color"] . $form["bgcolor"] . "}\n";
-	if($form["vlink_color"])
+	if(isset($form["vlink_color"]))
 		print "    A:visited {" . $form["vlink_color"] . $form["bgcolor"] . "}\n";
 	print "    .title {font-size: 12pt; font-weight: bold}\n";
 	print "  </style>\n";
-	if($form["css"])
+	if(isset($form["css"]))
 		print "  <link rel=\"stylesheet\" href=\"" . $form["css"] . "\">\n";
 	print "</head>\n\n";
 	print "<body>\n";
@@ -365,45 +392,50 @@ $form = $natural_form = decode_vars();
 fill_data($form["bgcolor"],"#FFFFFF","background-color");
 fill_data($form["text_color"],"#000000","color");
 
-if($form["link_color"])
-	fill_data($form["link_color"],NULL,"color");
-if($form["alink_color"])
-	fill_data($form["alink_color"],NULL,"color");
-if($fomr["vlink_color"])
-	fill_data($form["vlink_color"],NULL,"color");
-if($form["background"])
-	fill_data($form["background"],NULL,"background");
+fill_data($form["link_color"],NULL,"color");
+fill_data($form["alink_color"],NULL,"color");
+fill_data($form["vlink_color"],NULL,"color");
 
-if(check_referer($referers) && check_required()){
+check_referer($referers);
+if(isset($form["recipient"]))
+	check_recipients($recipients,$form["recipient"]);
+if(isset($form["recipient_cc"]))
+	check_recipients($recipients,$form["recipient_cc"]);
+if(isset($form["recipient_bcc"]))
+	check_recipients($recipients,$form["recipient_bcc"]);
+check_required();
+
+if(!$errors){
 	fill_data($form["subject"],"WWW Form Submission");
 	fill_data($form["email"],"email@example.com");
 	fill_data($form["realname"],"Unknown Stranger");
 
-	if($form["sort"])
+	if(isset($form["sort"]))
 		sort_fields();
 
-	send_mail();
-
-	if ($form["redirect"]){
-		$args = compile_url_args($natural_form);
-		Header("Location: " . $form["redirect"] . $args);
-		exit;
-	} else {
-		fill_data($form["title"],"PHPFormMail - Form Results");
-		$output = "<p class=\"title\">The following information has been submitted:</p>\n";
-		reset($form);
-		while(list($key,$val) = each($form)){
-			if (!in_array($key,$invis_array)){
-				if(is_array($val))
-					$val = implode(", ", $val);
-				$output .= "<b>" . htmlspecialchars($key) . ":</b> " . htmlspecialchars(stripslashes($val)) . "<br />\n";
+	if(send_mail()){
+		if (isset($form["redirect"])){
+			$args = compile_url_args($natural_form);
+			Header("Location: " . $form["redirect"] . $args);
+			exit;
+		} else {
+			fill_data($form["title"],"PHPFormMail - Form Results");
+			$output = "<p class=\"title\">The following information has been submitted:</p>\n";
+			reset($form);
+			while(list($key,$val) = each($form)){
+				if (!in_array($key,$invis_array)){
+					if(is_array($val))
+						$val = implode(", ", $val);
+					$output .= "<b>" . htmlspecialchars($key) . ":</b> " . htmlspecialchars(stripslashes($val)) . "<br />\n";
+				}
 			}
+			if(isset($form["return_link_url"]) && isset($form["return_link_title"]))
+				$output .= "<p><a href=\"" . $form["return_link_url"] . "\">". $form["return_link_title"] . "</a></p>\n";
+			output_html($output);
 		}
-		if($form["return_link_url"] && $form["return_link_title"])
-			$output .= "<p><a href=\"" . $form["return_link_url"] . "\">". $form["return_link_title"] . "</a></p>\n";
-		output_html($output);
 	}
 }
 
 error($errors);
+
 ?>
