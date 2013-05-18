@@ -1,3 +1,21 @@
+1.05.0 2002/10/01
+---------------------------
++ You can now have regular expressions in the $referers array.
++ Added the ability to have field name aliases.
++ Added the ability to have hidden field results.
+! Updated the error system to have critical errors.
+! Changed crit errors to link to the readme.
++ Added a new const for readme link.
+! Fixed check_recipients bug (Don)
+! Fixed a bug when setting the first 3 css variables.
+! Minor logic changes
+! Fixed bug with PHP showing isset for fields that were empty. Fix: strlen()
+! decode_vars() now returns an empty array if no data was sent to the form.
++ Added a new error message for no data being sent to the form.
+! changed error function to use global var instead of passing as a ref
+! removed exit() calls from script, it shouldn't need them.
+
+
 1.04.1 2002/07/22
 ---------------------------
 ! Fixed a possible exploit with the regex that checked e-mail addresses.
