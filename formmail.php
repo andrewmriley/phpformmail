@@ -1,5 +1,5 @@
 <?PHP
-define('VERSION','Classic v1.07.1');
+define('VERSION','Classic v1.07.2');
 define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');
 define('CHECK_REFERER', true);
 
@@ -37,11 +37,15 @@ define('CHECK_REFERER', true);
 // |                                                                        |
 // +------------------------------------------------------------------------+
 
+// To change the address the e-mail comes from use define('FROM', 'Example Name <email@example.com>');
+define('FROM', null);
+
 $referers = array('www.example.com', 'example.com');
 
-$valid_env = array('REMOTE_HOST', 'REMOTE_ADDR', 'REMOTE_USER', 'HTTP_USER_AGENT');
-
+// $recipient_array format is $recipient_array = array('sometext'=>'email@example.com','asdf'=>'email2@example.com');
 $recipient_array = array();
+
+$valid_env = array('REMOTE_HOST', 'REMOTE_ADDR', 'REMOTE_USER', 'HTTP_USER_AGENT');
 
 // +------------------------------------------------------------------------+
 // | STOP EDITING! The only two required variables that need to be updated  |
@@ -57,7 +61,8 @@ $invis_array = array('recipient','subject','required','redirect',
 		     'link','css','return_link_title',
 		     'return_link_url','recipient_cc','recipient_bcc',
 				 'priority','redirect_values','hidden','alias',
-         'mail_newline', 'gmt_offset', 'alias_method');
+         'mail_newline', 'gmt_offset', 'alias_method',
+         'subject_prefix');
 
 /****************************************************************
  * fake_in_array() is only used in PHP3 since PHP4 has a native	*
@@ -355,10 +360,14 @@ function alias_fields()
 
 function send_mail()
 {
-	global $form, $invis_array, $valid_env, $in_array_func, $fieldname_lookup, $errors;
+	global $form, $invis_array, $valid_env, $fieldname_lookup, $errors;
+	
+	$email_replace_array = "\r|\n|to:|cc:|bcc:";
 	
 	if (!isset($form['subject']))
 			$form['subject'] = 'WWW Form Submission';
+	if (isset($form['subject_prefix']))
+			$form['subject'] = $form['subject_prefix'] . $form['subject'];
 	if (!isset($form['email']))
 			$form['email'] = 'email@example.com';
 	
@@ -377,9 +386,9 @@ function send_mail()
 		$mail_date = date('F jS, Y') . ' at ' . date('h:iA (T).');
 	
 	if (isset($form['realname']))
-		$realname = $form['realname'];
+		$realname = eregi_replace($email_replace_array,'',$form['realname']);
 	elseif (isset($form['firstname']) || isset($form['lastname']))
-		$realname = trim($form['firstname'] . ' ' . $form['lastname']);
+		$realname = eregi_replace($email_replace_array,'',trim($form['firstname'] . ' ' . $form['lastname']));
 
 	$mailbody = 'Below is the result of your feedback form.  It was submitted by' . $mail_newline;
 	if (isset($realname))
@@ -390,7 +399,7 @@ function send_mail()
 	reset($form);
 	
 	while (list($key,$val) = each($form)) {
-		if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
+		if ((!in_array($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
 				if(($form['alias_method'] == 'email') || ($form['alias_method'] == 'both'))
 					$mailbody .= $fieldname_lookup[$key];
 				else
@@ -398,13 +407,13 @@ function send_mail()
 				$mailbody .= ': ' . $val . $mail_newline;
 		}
 	}
-
+	
 	if (isset($form['env_report'])) {
 		$temp_env_report = explode(',', $form['env_report']);
 		$mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
 		while (list(,$val) = each($temp_env_report)) {
-			if ($in_array_func($val,$valid_env))
-					$mailbody .= $val . ': ' . getenv($val) . $mail_newline;
+			if (in_array($val,$valid_env))
+					$mailbody .= eregi_replace($email_replace_array,'',$val) . ': ' . eregi_replace($email_replace_array,'',getenv($val)) . $mail_newline;
 		}
 	}
 
@@ -415,25 +424,40 @@ function send_mail()
 	// added to the headers of the e-mail. (SMTP Format
 	// with newline char ending each line)
 
-	$mail_header = 'From: ' . $form['email'];
+	$mail_header = 'Return-Path: ' . eregi_replace($email_replace_array,'',$return_path) . $mail_newline;
+	if (FROM != null)
+		$mail_header .= 'From: ' . FROM . $mail_newline;
+	$mail_header .= 'Reply-to: ';
 	if (isset($realname))
-		$mail_header .= ' (' . $realname . ')';
-	$mail_header .= $mail_newline;
+		$mail_header .= $realname . ' <' . eregi_replace($email_replace_array,'',$form['email']) . '>' . $mail_newline;
+	else
+		$mail_header .= eregi_replace($email_replace_array,'',$form['email']) . $mail_newline;
 	if (isset($form['recipient_cc']))
-		$mail_header .= 'Cc: ' . $form['recipient_cc'] . $mail_newline;
+		$mail_header .= 'Cc: ' . eregi_replace($email_replace_array,'',$form['recipient_cc']) . $mail_newline;
 	if (isset($form['recipient_bcc']))
-		$mail_header .= 'Bcc: ' . $form['recipient_bcc'] . $mail_newline;
+		$mail_header .= 'Bcc: ' . eregi_replace($email_replace_array,'',$form['recipient_bcc']) . $mail_newline;
 	if (isset($form['priority']))
-		$mail_header .= 'X-Priority: ' . $form['priority'] . $mail_newline;
+		$mail_header .= 'X-Priority: ' . ereg_replace($email_replace_array,'',$form['priority']) . $mail_newline;
 	else
 		$mail_header .= 'X-Priority: 3' . $mail_newline;
-	$mail_header .= 'Content-Type: text/plain; charset=utf-8' . $mail_newline;
 	$mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . ' (http://www.boaddrink.com)' . $mail_newline;
-
-	$mail_status = mail($form['recipient'], $form['subject'], $mailbody, $mail_header);
-	if (!$mail_status) {
-		 $errors[] = '1|Message could not be sent due to an error while trying to send the mail.';
-     error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
+	$mail_header .= 'X-Sender-IP: ' . eregi_replace($email_replace_array,'',getenv('REMOTE_ADDR')) . $mail_newline;
+	$mail_header .= 'X-Referer: ' . eregi_replace($email_replace_array,'',getenv('HTTP_REFERER')) . $mail_newline;
+	
+	$form['subject'] = eregi_replace($email_replace_array,'',$form['subject']);
+	
+	if (eregi("MIME-|Content-|boundary", $mail_header . $mailbody . $form['subject']) == 0) {
+		$mail_header .= 'Content-Type: text/plain; charset=utf-8' . $mail_newline;
+		$mail_status = mail(eregi_replace($email_replace_array,'',$form['recipient']), $form['subject'], $mailbody, $mail_header);
+		if (!$mail_status) {
+			$errors[] = '1|Message could not be sent due to an error while trying to send the mail.';
+			error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
+		} else {
+			error_log('[PHPFormMail] Normal e-mail sent from IP ' . getenv('REMOTE_ADDR'));
+		}
+	} else {
+			$mail_status = true;
+			error_log('[PHPFormMail] Injection characters found from IP ' . getenv('REMOTE_ADDR') . '. Silently dropped');
 	}
 	return $mail_status;
 }

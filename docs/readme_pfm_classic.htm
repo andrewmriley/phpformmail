@@ -37,6 +37,7 @@ hr { margin-bottom: 2em; }
         <ul class="littletext">
           <li><a href="#manual">MANUAL</a></li>
           <li><a href="#check_referer">CHECK_REFERERS</a></li>
+          <li><a href="#from">FROM</a></li>
           <li><a href="#recipient_array">$rcipient_array</a></li>
         </ul>
       </li>
@@ -51,6 +52,7 @@ hr { margin-bottom: 2em; }
       </li>
       <li><a href="#optional_form_fields">Optional Form Fields</a>
         <ul class="littletext">
+          <li><a href="#subject">subject_prefix<span class="newast">*</span></a></li>
           <li><a href="#subject">subject</a></li>
           <li><a href="#email">email</a></li>
           <li><a href="#recipient_cc">recipient_cc</a><span class="newast">*</span></li>
@@ -86,6 +88,8 @@ hr { margin-bottom: 2em; }
         <ul>
           <li><a href="#multiple">Multiple Results</a> (checkboxes and multiple lists)</li>
           <li><a href="#reserved_words">Reserved Words</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#additional_help">Additional Help</a></li>
         </ul>
       </li>
     </ul>
@@ -97,7 +101,7 @@ hr { margin-bottom: 2em; }
 <pre>
 #############################################################################
 # PHPFormMail - Something we've always had...                               #
-# Copyright (c) 1999 Andrew Riley (webmaster@boaddrink.com)                 #
+# Copyright (c) 1999 Andrew Riley (http://www.boaddrink.com)                #
 
 #                                                                           #
 #############################################################################
@@ -110,7 +114,8 @@ hr { margin-bottom: 2em; }
 <a name="overview" class="title2" id="overview">Overview</a>
 <p>PHPFormMail is a universal WWW form to e-mail gateway.. PHPFormMail's main goal is to seamlessly take the place of it's PERL sister. All functions from PERL FormMail have an exact duplicate in PHPFormMail. PHPFormMail also has some extra functions built in, where ever you see a &quot;<span class="newast">*</span>&quot; (red star) is a new feature. Special thanks to Matt's Script Archive (<a href="http://www.worldwidemart.com/scripts">http://www.worldwidemart.com/scripts</a>) for if it wasn't for him/them/her (?) there would be no FormMail period. =:^)</p>
 <p>There is only one required form input tag which must be specified in order for this script to work with your existing forms. Other hidden configuration fields can also be used to enhance the operation of FormMail on your site. </p>
-<p> The anonymous WWW user must have the ability to read/execute the PHPFormMail.php script. If you have problems running a script with the .php extension, try .php3, .phtm, .phtml. If those do not work, please check with your system administrator for more help on running PHP scripts. </p>
+<p> The anonymous WWW user must have the ability to read the PHPFormMail.php script. If you have problems running a script with the .php extension, try .php3, .phtm, .phtml. If those do not work, please check with your system administrator for more help on running PHP scripts. </p>
+<p>Please be sure not to put the formmail.php in your cgi-bin directory unless your web host tells you to. There is no need to make your php scripts executable.</p>
 <hr size="1" />
 <a name="setting_up" class="title2" id="setting_up">Setting Up the PHPFormMail Script</a>
 <p>The PHPFormMail.php script does not have to be extensively configured in order to work. There are only two variables in the script in which you will be required to modify. Note: For this section (Setting Up the PHPFormMail Script) you will need to edit the formmail.php.</p>
@@ -120,31 +125,99 @@ hr { margin-bottom: 2em; }
   <br />
   Note: <b>The domains listed in the $referers array must also include the domain that the e-mail is going to.</b><br />
   <br />
-  Example: If the recipient of the e-mail is test@example.com and the form is hosted on boaddrink.com, your $referes array will have to look like<br />
+  Example: If the recipient of the e-mail is test@example.com and the form is hosted on boaddrink.com, your $referers array will have to look like<br />
   <br />
   $referers = array(&quot;boaddrink.com&quot;, &quot;example.com&quot;); <br />
   <br />
   Remember, the domain name of the recipient's domain must be listed in the $referer array, even if the form isn't hosted on that domain. Rule of thumb, include the domain name that is hosting the form AND include the domain name of the recipients (This includes <a href="#recipient">recipient</a>, <a href="#recipient_cc">recipient_cc</a>, and <a href="recipient_bcc">recipient_bcc</a>).</p>
 <p>&nbsp;</p>
-<p><a name="valid_env" class="code" id="valid_env"><strong>$valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");</strong></a></p>
+<p><a name="valid_env" class="code"><strong>$valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");</strong></a></p>
 <p>This array allows you to define enviromental variables that can be reported. The odds are you won't need to change these. For more information on environmental variables, please see <a href="#env_report">env_report</a>. </p>
 <p><a name="optional_vars" class="title3" id="optional_vars">Optional Variables</a></p>
-<p><a name="manual" class="code" id="valid_env"><strong>define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');</strong></a></p>
-<p>Modifying the URL listed in this constant will change the address that the script points to in the event of an error. Nine times out of ten you won't have to change this. </p>
-<p><a name="check_referer" class="code" id="valid_env"><strong>define('CHECK_REFERER', true);</strong></a></p>
-<p>This constant defines if the script should do referer checking. It it highly recomended that you keep this set to &quot;true&quot; since changing this to &quot;false&quot; could cause your script to become an open relay (ie: allowing spammers to use your server). The only time this constant comes up is when a user submits a form and has an overactive firewall that removes the HTTP_REFERER. In this case, you have two options, change this setting to false or tell the user to relax some of their security settings. </p>
-<p><a name="recipient_array" class="code" id="valid_env"><strong>$recipient_array = array();</strong></a></p>
-<p>This is the only Optional Variable that I recomend changing and using. This array allows you to list valid key/value pairs of e-mail addresses so you don't have to expose your e-mail address to the net. If you define ANY e-mail addresses in the $recipient_array then all forms using this script must pass keys to the script and not email addresses. The format is $recipient_array = array(<strong>key</strong> =&gt; <strong>value</strong>) and the key can be whatever you like. You'll want the value to be a valid e-mail address. Note: The domain of the e-mail address DOES NOT have to be added to the <a href="#referers">$referers</a>.</p>
-<p>I will present three different ways to setup this variable (from least secure to most secure). I would recomend you implement either either example #2 or #3. </p>
-<p>Example #1<br />
-  <span class="code">$recipient_array = array(1 =&gt; 'email@example.com', 2 =&gt; 'somebodyelse@example.com');</span></p>
-<p>Example #2<br />
-  <span class="code">$recipient_array = array('bob' =&gt; 'email@example.com', 'sally' =&gt; 'somebodyelse@example.com');</span></p>
-<p>Example #3<br />
-  <span class="code">$recipient_array = array('fcf7b465cc30923b02a8cecc2ede239331c7990e' =&gt; 'email@example.com', ' 2bd7df9fbc9f87040e617b5c09ad16aa85d73ecc ' =&gt; 'somebodyelse@example.com');</span></p>
-<p>Example #1 is the least secure, spammers could just keep trying numbers (1, 2, 3) to see who they can get.</p>
-<p>Example #2 is more secure since it doesn't follow a sequential pattern.</p>
-<p>Example #3 is the most secure of the three examples since it uses completely random number/letters.</p>
+<table width="90%" border="0" cellpadding="5" cellspacing="0">
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft">Line:</td>
+    <td class="sectionfield"><a name="manual" class="code" id="manual"><strong>define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');</strong></a></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td>Modifying the URL listed in this constant will change the address that the script points to in the event of an error. Nine times out of ten you won't have to change this. </td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td><span class="sectionfield">define('MANUAL',url);</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any valid URL that has the readme file</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="90%" border="0" cellpadding="5" cellspacing="0">
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft">Line:</td>
+    <td class="sectionfield"><a name="check_referer" class="code" id="check_referer"><strong>define('CHECK_REFERER', true);</strong></a></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td>This constant defines if the script should do referer checking. It it highly recomended that you keep this set to &quot;true&quot; since changing this to &quot;false&quot; could cause your script to become an open relay (ie: allowing spammers to use your server). The only time this constant comes up is when a user submits a form and has an overactive firewall that removes the HTTP_REFERER. In this case, you have two options, change this setting to false or tell the user to relax some of their security settings. </td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td><span class="sectionfield">define('CHECK_REFERER',boolean);</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>true, false </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="90%" border="0" cellpadding="5" cellspacing="0">
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft">Line:</td>
+    <td class="sectionfield"><a name="from" id="from"><strong>define('FROM', null);</strong></a></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td>This optional field will let you set what e-mail address the e-mail comes from. It will not affect the e-mail address listed in the <a href="#email">email</a> field. It's purely for looks it will also not affect the Return-Path field, that is *only* set by the mail server for security reasons. </td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td><span class="sectionfield">define('FROM'',boolean);</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>A valid e-mail address defined in <a href="http://www.ietf.org/rfc/rfc2821.txt" target="_blank">RFC 2821</a> or null. </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="90%" border="0" cellpadding="5" cellspacing="0">
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft">Line:</td>
+    <td class="sectionfield"><a name="recipient_array" class="code"><strong>$recipient_array = array();</strong></a></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td>This is the only Optional Variable that I recomend changing and using. This array allows you to list valid key/value pairs of e-mail addresses so you don't have to expose your e-mail address to the net. If you define ANY e-mail addresses in the $recipient_array then all forms using this script must pass keys to the script and not email addresses. The format is $recipient_array = array(<strong>key</strong> =&gt; <strong>value</strong>) and the key can be whatever you like. You'll want the value to be a valid e-mail address. Note: The domain of the e-mail address DOES NOT have to be added to the <a href="#referers">$referers</a>.</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td><p>Example #1<br />
+        <span class="code">$recipient_array = array(1 =&gt; 'email@example.com', 2 =&gt; 'somebodyelse@example.com');</span></p>
+      <p>Example #2<br />
+        <span class="code">$recipient_array = array('bob' =&gt; 'email@example.com', 'sally' =&gt; 'somebodyelse@example.com');</span></p>
+      <p>Example #3<br />
+        <span class="code">$recipient_array = array('fcf7b465cc30923b02a8cecc2ede239331c7990e' =&gt; 'email@example.com', ' 2bd7df9fbc9f87040e617b5c09ad16aa85d73ecc ' =&gt; 'somebodyelse@example.com');</span></p>
+      <p>Example #1 is the least secure, spammers could just keep trying numbers (1, 2, 3) to see who they can get.</p>
+      <p>Example #2 is more secure since it doesn't follow a sequential pattern.</p>
+      <p>Example #3 is the most secure of the three examples since it uses completely random number/letters.</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>See examples</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
 <hr size="1" />
 <a name="form_config" class="title2" id="form_config">Form Configuration</a>
 <p>The action of your form needs to point towards this script (obviously), and the method must be POST or GET. Below is a list of form fields you can use and how to implement them. All fields listed below need to be added to an HTML form that you create. </p>
@@ -164,9 +237,9 @@ hr { margin-bottom: 2em; }
     <td class="code"><p>Single Recipient <br />
 &lt;input type=&quot;hidden&quot; name="recipient" value="email@example.com"&gt;</p>
       <p>Single Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient" value=&quot;bob&quot;&gt; </p>
+&lt;input type=&quot;hidden&quot; name="recipient" value=&quot;bob&quot;&gt; </p>
       <p>Multiple Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient" value=&quot;bob,sally&quot;&gt; </p></td>
+&lt;input type=&quot;hidden&quot; name="recipient" value=&quot;bob,sally&quot;&gt; </p></td>
   </tr>
   <tr>
     <td class="sectionleft">Valid Values: </td>
@@ -175,6 +248,25 @@ hr { margin-bottom: 2em; }
 </table>
 <hr size="1" />
 <p><a name="optional_form_fields" class="title3" id="optional_form_fields">Optional Form Fields</a></p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft"><a name="subject_prefix" id="subject_prefix">Field:</a></td>
+    <td class="sectionfield">subject_prefix</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td>Allows you to specify text to go in front of the subject. This is only usefull when you are letting the user define the subject. </td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td><span class="code">&lt;input type=&quot;hidden&quot; name="subject_prefix" value="My website Feedback: "&gt;</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
   <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="subject" id="subject">Field:</a></td>
@@ -204,8 +296,8 @@ hr { margin-bottom: 2em; }
   </tr>
   <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field will allow the user to specify their return e-mail address. If you want to be able to return e-mail to your user, I strongly suggest that you include this form field and allow them to fill it in. This will be put into the From: field of the message you receive. If you want to require an email address with valid syntax, add this field name to the 'required' field.
-      <p>To send e-mail to more than one address, use commas to seperate the addresses.</p></td>
+    <td><p>This form field will allow the user to specify their return e-mail address. If you want to be able to return e-mail to your user, I strongly suggest that you include this form field and allow them to fill it in. This will be put into the Reply-To: field of the message you receive. If you want to require an email address with valid syntax, add this field name to the 'required' field.</p>
+      <p>Version 1.07.2 changed this from using the From SMTP field to use the Reply-To SMTP to better accommodate <a href="http://www.openspf.org/" target="_blank">SPF</a>. </p></td>
   </tr>
   <tr>
     <td class="sectionleft">Syntax:</td>
@@ -230,13 +322,13 @@ hr { margin-bottom: 2em; }
   <tr>
     <td class="sectionleft">Syntax:</td>
     <td>Single Recipient:<br />
-      <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;nobody@example.com&quot;&gt;</span>
+      <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_cc" value=&quot;nobody@example.com&quot;&gt;</span>
       <p>Multiple Recipients:<br />
-        <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_cc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
       <p>Single Carbon Copied Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;bob&quot;&gt; </p>
+&lt;input type=&quot;hidden&quot; name="recipient_cc" value=&quot;bob&quot;&gt; </p>
       <p>Multiple Carbon Copeid Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;bob,sally&quot;&gt; </p></td>
+&lt;input type=&quot;hidden&quot; name="recipient_cc" value=&quot;bob,sally&quot;&gt; </p></td>
   </tr>
   <tr>
     <td class="sectionleft">Valid Values:</td>
@@ -257,13 +349,13 @@ hr { margin-bottom: 2em; }
   <tr>
     <td class="sectionleft">Syntax:</td>
     <td>Single Recipient:<br />
-      <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;nobody@example.com&quot;&gt;</span>
+      <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_bcc" value=&quot;nobody@example.com&quot;&gt;</span>
       <p>Multiple Recipients:<br />
-        <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_bcc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
       <p>Single Blind Carbon Copied Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;bob&quot;&gt; </p>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_bcc" value=&quot;bob&quot;&gt;</span></p>
       <p>Multiple Blind Carbon Copied Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
-&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;bob,sally&quot;&gt; </p></td>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="recipient_bcc" value=&quot;bob,sally&quot;&gt;</span></p></td>
   </tr>
   <tr>
     <td class="sectionleft">Valid Values: </td>
@@ -317,7 +409,7 @@ hr { margin-bottom: 2em; }
   </tr>
   <tr>
     <td class="sectionleft">Description:</td>
-    <td>This send the form results on to the redirect page (for further processing by your own script). You must specify <a href="#redirect">redirect</a> and/or <a href="#missing_fields_redirect">missing_fields_redirect</a> for this feature to work. <b>NOTE: You must use the GET method for this feature to work.</b></td>
+    <td>This sends the form results on to the redirect page (for further processing by your own script). You must specify <a href="#redirect">redirect</a> and/or <a href="#missing_fields_redirect">missing_fields_redirect</a> for this feature to work. <b>NOTE: You must use the GET method for this feature to work.</b></td>
   </tr>
   <tr>
     <td class="sectionleft">Syntax:</td>
@@ -403,7 +495,7 @@ hr { margin-bottom: 2em; }
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
   <tr bgcolor="#CCCCCC">
-    <td class="sectionleft"><a name="alias" id="alias">Field:</a></td>
+    <td class="sectionleft"><a name="alias">Field:</a></td>
     <td class="sectionfield">alias<span class="newast">*</span></td>
   </tr>
   <tr>
@@ -424,7 +516,7 @@ hr { margin-bottom: 2em; }
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
   <tr bgcolor="#CCCCCC">
-    <td class="sectionleft"><a name="alias" id="alias">Field:</a></td>
+    <td class="sectionleft"><a name="alias">Field:</a></td>
     <td class="sectionfield">alias_method<span class="newast">*</span></td>
   </tr>
   <tr>
@@ -808,15 +900,20 @@ hr { margin-bottom: 2em; }
 <p>Any other form fields that appear in your script will be mailed back to you and displayed on the resulting page if you do not have the redirect field set. There is no limit as to how many other form fields you can use with this form, except the limits imposed by browsers and your server.</p>
 <p>&nbsp;</p>
 <p><a name="add_notes" class="title3" id="add_notes">Additional Notes</a> </p>
-<p><strong><a name="multiple" id="multiple">Multiple Results</a></strong> </p>
+<p><strong><a name="multiple" id="multiple">Multiple Results</a></strong></p>
 <p>When using checkboxes and multiple selection lists, you'll need to add [] to the end of the name. When the [] is added, PHPFormMail can then properly process the field and print it out in a comma separated format.</p>
 <p><strong><a name="reserved_words" id="reserved_words">Reserved Words</a></strong></p>
 <p>Here is the list of reserved words. Naming a field name any of the following could cause unexpected results:<br />
-  recipient, subject, required, redirect, print_blank_fields, env_report, sort, missing_fields_redirect, title, bgcolor, text_color, link_color, alink_color, vlink_color, background, subject, title, link, css, return_link_title, return_link_url, recipient_cc, recipient_bcc, priority, redirect_values, hidden, alias, mail_newline, gmt_offset, alias_method </p>
+  recipient, subject, required, redirect, print_blank_fields, env_report, sort, missing_fields_redirect, title, bgcolor, text_color, link_color, alink_color, vlink_color, background, subject, title, link, css, return_link_title, return_link_url, recipient_cc, recipient_bcc, priority, redirect_values, hidden, alias, mail_newline, gmt_offset, alias_method, subject_prefix</p>
+<p><strong><a name="security" id="security">Security</a></strong></p>
+<p>While PHPFormMail uses referer checking, recipient checking, recipient arrays and body/header regular expression checks it could still be possible for there to be exploits from spamers. Please always keep an eye on your logs to verify there aren't excessive amounts of e-mail going through your formmail.</p>
+<p>E-mails that fail the regular expression check will enter &quot;Injection characters found from IP {ip_address}&quot; in the logs. E-mails that pass all the tests and are sent will have a log entry of &quot;Normal e-mail sent from IP {ip_address}&quot;. Also all e-mails will have headers stating the form referer and the senders IP address. </p>
+<p><strong><a name="additional_help" id="additional_help">Additional Help</a></strong></p>
+<p>If you do need any additional help stop by and check out our <a href="http://www.boaddrink.com/forum/" target="_blank">message boards</a>. Please be sure to check the <a href="http://www.boaddrink.com/forum/viewtopic.php?t=39" target="_blank">things to do before posting</a> and also check the <a href="http://www.boaddrink.com/forum/viewtopic.php?t=8" target="_blank">frequently asked questions</a> before posting your questions.</p>
 <hr size="1" />
 <a name="donations" class="title2" id="donations">Donations</a>
 <p>As you know, most of the software I release is free, and will always be free. Keep in mind that this donation page isn't for me to profit, it's to allow me to continue developing free software and to keep boaddrink.com for you, the user. Please remember that this software is free for you to download and use but that doesn't mean it's not worth anything. You can donate any amount of money you wish... from $1 to $1,000,000. While a million dollars would be nice don't be pressured, any amount helps, even one dollar.</p>
-<p>If you wish to donate, please visit <a href="http://www.boaddrink.com/donate.php" target="_blank">http://www.boaddrink.com/donate.php</a></p>
+<p>If you wish to donate, please visit <a href="http://www.boaddrink.com/about/donate.php" target="_blank">http://www.boaddrink.com/donate.php</a></p>
 <p>Thanks,<br />
   Andrew Riley</p>
 <hr size="1" />
