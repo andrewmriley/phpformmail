@@ -69,6 +69,8 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
           <li class="littletext"><a href="#vlink_color">vlink_color</a></li>
           <li class="littletext"><a href="#alink_color">alink_color</a></li>
           <li class="littletext"><a href="#css">css</a><span class="newast">*</span></li>
+          <li class="littletext"><a href="#gmt_offset">gmt_offset</a><span class="newast">*</span></li>
+          <li class="littletext"><a href="#mail_newline">mail_newline</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#_regex">_regex</a><span class="newast">*</span></li>
         </ul>
       </li>
@@ -691,6 +693,43 @@ Form Fields</a>
     <td class="sectionleft">Syntax:</td>
     <td>For a active link color of Blue: 
       <p class="code">&lt;input type=&quot;hidden&quot; name="alink_color" value="#0000FF"&gt;</p></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <td class="sectionleft"><a name="gmt_offset" id="gmt_offset">Field:</a></td>
+    <td class="sectionfield">gmt_offset<span class="newast">*</span></td>
+  </tr>
+  <tr> 
+    <td class="sectionleft">Description:</td>
+    <td>Allows you to specify your GMT offset (+/-) so the time reported in the 
+      e-mail will match your time zone. (Default is your servers time zone)</td>
+  </tr>
+  <tr> 
+    <td class="sectionleft">Syntax:</td>
+    <td>To change the time into American EST: 
+      <p class="code">&lt;input type=&quot;hidden&quot; name="gmt_offset" value="-5"&gt;</p></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <td class="sectionleft"><a name="mail_newline" id="mail_newline">Field:</a></td>
+    <td class="sectionfield">mail_newline<span class="newast">*</span></td>
+  </tr>
+  <tr> 
+    <td class="sectionleft">Description:</td>
+    <td><p>Allows you to specify the type of linebreak in your e-mail output. 
+        Only change if your e-mail is listed all on one line.</p>
+      <p>1 \n (default)<br />
+        2 \r\n<br />
+        3 \r</p></td>
+  </tr>
+  <tr> 
+    <td class="sectionleft">Syntax:</td>
+    <td>To change your linebreak to \r\n: 
+      <p class="code">&lt;input type=&quot;hidden&quot; name="mail_newline" value="2"&gt;</p></td>
   </tr>
 </table>
 <p>&nbsp;</p>
