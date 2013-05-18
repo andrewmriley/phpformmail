@@ -1,3 +1,12 @@
+1.07.1 2005/03/27
+---------------------------
+- Removed the conditional block around the block of if statements that called $recipient_function to fix the CHECK_REFERER=false vulnerability
+- Removed the PHPFormMail version number from the HTML output.  It is still reported in the e-mail.
+* Moved the $recipient_array checking code from a variable to be imbeded in the if statement since it's only used once
+* Changed the html output to use the charset of utf-8
++ Added a new header to the e-mail output so the email will use the charset of utf-8
+* Cleaned up some double quotes that should be single quotes
+
 1.07.0 2004/12/18
 ---------------------------
 + Added map_recipients()

@@ -1,5 +1,5 @@
 <?PHP
-define('VERSION','Classic v1.07.0');
+define('VERSION','Classic v1.07.1');
 define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');
 define('CHECK_REFERER', true);
 
@@ -302,7 +302,7 @@ function check_required()
 function sort_fields()
 {
 	global $form;
-	switch ($form["sort"]) {
+	switch ($form['sort']) {
 		case 'alphabetic':
 		case 'alpha':		ksort($form);
 					break;
@@ -381,7 +381,7 @@ function send_mail()
 	elseif (isset($form['firstname']) || isset($form['lastname']))
 		$realname = trim($form['firstname'] . ' ' . $form['lastname']);
 
-	$mailbody = "Below is the result of your feedback form.  It was submitted by" . $mail_newline;
+	$mailbody = 'Below is the result of your feedback form.  It was submitted by' . $mail_newline;
 	if (isset($realname))
 		$mailbody.= $realname . ' (' . $form['email'] . ') on ' . $mail_date . $mail_newline . $mail_newline;
 	else
@@ -401,7 +401,7 @@ function send_mail()
 
 	if (isset($form['env_report'])) {
 		$temp_env_report = explode(',', $form['env_report']);
-		$mailbody .= $mail_newline . $mail_newline . "-------- Env Report --------" . $mail_newline;
+		$mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
 		while (list(,$val) = each($temp_env_report)) {
 			if ($in_array_func($val,$valid_env))
 					$mailbody .= $val . ': ' . getenv($val) . $mail_newline;
@@ -420,14 +420,15 @@ function send_mail()
 		$mail_header .= ' (' . $realname . ')';
 	$mail_header .= $mail_newline;
 	if (isset($form['recipient_cc']))
-		$mail_header .= 'Cc: ' . $form["recipient_cc"] . $mail_newline;
+		$mail_header .= 'Cc: ' . $form['recipient_cc'] . $mail_newline;
 	if (isset($form['recipient_bcc']))
 		$mail_header .= 'Bcc: ' . $form['recipient_bcc'] . $mail_newline;
 	if (isset($form['priority']))
 		$mail_header .= 'X-Priority: ' . $form['priority'] . $mail_newline;
 	else
-		$mail_header .= "X-Priority: 3" . $mail_newline;
-	$mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . " (http://www.boaddrink.com)" . $mail_newline;
+		$mail_header .= 'X-Priority: 3' . $mail_newline;
+	$mail_header .= 'Content-Type: text/plain; charset=utf-8' . $mail_newline;
+	$mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . ' (http://www.boaddrink.com)' . $mail_newline;
 
 	$mail_status = mail($form['recipient'], $form['subject'], $mailbody, $mail_header);
 	if (!$mail_status) {
@@ -462,7 +463,7 @@ function output_html($body)
 	print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 	print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">\n";
 	print "<head>\n";
-	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\" />\n";
+	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
 	print "  <meta name=\"robots\" content=\"noindex,nofollow\" />\n";
 	print "  <title>" . htmlspecialchars($form['title']) . "</title>\n";
 	print "  <style type=\"text/css\">\n";
@@ -482,7 +483,7 @@ function output_html($body)
 		print "  <link rel=\"stylesheet\" href=\"" . htmlspecialchars($form['css']) . "\">\n";
 	print "</head>\n\n";
 	print "<body>\n";
-	print "<!-- PHPFormMail " . VERSION . " from http://www.boaddrink.com -->\n";
+	print "<!-- PHPFormMail from http://www.boaddrink.com -->\n";
 	print $body;
 	print "<div class=\"validbutton\"><a href=\"http://validator.w3.org/check/referer\" target=\"_blank\"><img src=\"http://www.w3.org/Icons/valid-xhtml10\" style=\"border:0;width:88px;height:31px\" alt=\"Valid XHTML 1.0!\" /></a></div>\n";
 	print "</body>\n";
@@ -506,37 +507,26 @@ if (count($form) > 0) {
 	if($use_field_alias = isset($form['alias']))
 		alias_fields();
 	
-	// If the $recipient_array has any entries at the top of this script set the variable to true
-	// This is used to save some CPU time later by only checking a boolean and not doing a function
-	// call each time we need to check if we are to use the $recipient_array
-	$use_recipient_array = (count($recipient_array) > 0);
-	
 	if(CHECK_REFERER == true)
 		check_referer($referers);
 	else
 		error_log('[PHPFormMail] HTTP_REFERER checking is turned off.  Referer: ' . getenv('HTTP_REFERER') . '; Client IP: ' . getenv('REMOTE_ADDR') . ';', 0);
+
+	// This is used for another variable function call
+	if ((count($recipient_array) > 0) == true)
+		$recipient_function = 'map_recipients';
+	else
+		$recipient_function = 'check_recipients';
 	
-	// I added this conditional so the $recipient_function will only be called if we are supposed
-	// to check the referer or we need to call map_recipients (it makes no sense to run four
-	// conditionals with a possible calling of three functions if they arent needed).
-	if((CHECK_REFERER == true) || ($use_recipient_array == true)) {
-		
-		// This is used for another variable function call
-		if ($use_recipient_array == true)
-			$recipient_function = 'map_recipients';
-		else
-			$recipient_function = 'check_recipients';
-		
-		if (isset($form['recipient']))
-			$form['recipient'] = $recipient_function($form['recipient']);
-		if (isset($form['recipient_cc']))
-			$form['recipient_cc'] = $recipient_function($form['recipient_cc']);
-		if (isset($form['recipient_bcc']))
-			$form['recipient_bcc'] = $recipient_function($form['recipient_bcc']);
-	}
+	if (isset($form['recipient']))
+		$form['recipient'] = $recipient_function($form['recipient']);
+	if (isset($form['recipient_cc']))
+		$form['recipient_cc'] = $recipient_function($form['recipient_cc']);
+	if (isset($form['recipient_bcc']))
+		$form['recipient_bcc'] = $recipient_function($form['recipient_bcc']);
 	
 	check_required();
-
+	
 	if (!$errors) {
 
 		if (isset($form['sort']))
