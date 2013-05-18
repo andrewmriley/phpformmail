@@ -115,14 +115,28 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 <a name="necessary_vars" class="title3">Necessary Variable</a> 
 <dl> 
   <dt>&nbsp; 
-  <dt><a name="referers" class="code">$referers = array('boaddrink.com','216.92.77.123');</a> 
+  <dt><a name="referers" class="code">$referers = array(&quot;boaddrink.com&quot;,&quot;216.92.77.123&quot;);</a> 
   <dd>This array allows you to define the domains that you will allow forms to 
     reside on and use your PHPFormMail script. If a user tries to put a form on 
     another server, that is not in your list, they will receive an error message 
     when someone tries to fill out their form. By placing boaddrink in the $referers 
     array, this DOES NOT allow www.boaddrink.com, ftp.boaddrink.com, any other 
     http address with boaddrink.com in it. I included boaddrink.com's IP address 
-    to access this script as well, just to be on the safe side.. 
+    to access this script as well, just to be on the safe side..<br>
+    <br>
+    Note: <b>The domains listed in the $referers array must also include the domain 
+    that the e-mail is going to.</b><br>
+    <br>
+    Example: If the recipient of the e-mail is test@example.com and the form is 
+    hosted on boaddrink.com, your $referes array will have to look like<br>
+    <br>
+    $referers = array(&quot;boaddrink.com&quot;, &quot;example.com&quot;); <br>
+    <br>
+    Remember, the domain name of the recipient's domain must be listed in the 
+    $referer array, even if the form isn't hosted on that domain. Rule of thumb, 
+    include the domain name that is hosting the form AND include the domain name 
+    of the recipients (This includes <a href="#recipient">recipient</a>, <a href="#recipient_cc">recipient_cc</a>, 
+    and <a href="recipient_bcc">recipient_bcc</a>).
 </dl>
 <dl> 
   <dt>&nbsp; 
