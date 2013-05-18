@@ -1,3 +1,14 @@
+1.07.2 2005/12/04
+---------------------------
++ Added the from define to define what address the results email is coming from
+* Changed the e-mail field to be reported as Reply-To instead of From: (for SPF)
++ Added checks to send_mail() to check for CC/BCC/MIME injection exploits
++ Added a silent drop if the e-mail fails the injection tests
++ Added a log entry if the e-mail is sent with the senders IP address.  This allows webmasters/hosting companies to see how many times the formmail.php is sending mail which will help identify if there is an injection exploit that is not be caught.
++ Added a sender IP field to the headers of the e-mail
++ Added a referer field to the headers of the e-mail
++ Added subject_prefix for sites that allow users to define the subject
+
 1.07.1 2005/03/27
 ---------------------------
 - Removed the conditional block around the block of if statements that called $recipient_function to fix the CHECK_REFERER=false vulnerability
