@@ -1,7 +1,7 @@
 <?PHP
 
 #############################################################################
-#                                                        PHPFormMail v0.02b #
+#                                                        PHPFormMail v0.03b #
 # PHPFormMail - Something we've allways had...                              #
 # Copyright (c) 1999 Andrew Riley (boad@boaddrink.com)                      #
 #                                                                           #
@@ -161,7 +161,7 @@ function send_mail($form,$invis_array){
      while (list($key,$val) = each ($form)){
        if (!in_array($key,$invis_array)){
          if (($form["print_blank_fields"]) || ($val)){
-           $mailbody .= $key.": ". $val ."\n";
+           $mailbody .= $key.": ". stripslashes($val) ."\n";
          }
        }
      }
