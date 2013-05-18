@@ -1,3 +1,26 @@
+1.07.0 2004/12/18
+---------------------------
++ Added map_recipients()
++ Added logic to call map_recipients when $recipient_array is used
+! Moved the html "look code" (vlink, link, etc) to the output_html function
++ *Added htmlspecialchars() to all the output in the output_html function.  
+! Changed output_html to use local variables for the modified values.
+! Moved the subject and email check to the send_mail function.
+! Modified the CSS title class to be a H1
+! Fixed the CSS code so backgrounds will properly show again
+! *Fixed a bug when aliases were used and there was a hidden field (there was a $ in front of htmlspecialchars)
++ Added the ability to specify how aliases are applied (html, email, both) default is html
++ Added the ability for the email to use aliases
++ Added a conditional to call alias_fields() (why call it if there aren't any)
+! Cleaned up the main output loop for fields
+! HTML output fields will now properly show line breaks (if there was multi line input).  This does not affect the e-mail output
+! Changed the HTTP_REFERER error so it doesn't point to a page that doesn't exist.
+
+Added new invisible fields: recipient_array - should contain keys to match the 
+$recipient_array alias_method - can be "html", "email", "both"
+
+*Denotes a possible Cross Site Scripting (XSS) vulnerability
+
 1.06.0 2003/02/01
 ---------------------------
 ! Made script play nicely with php4 that has globals turned off.
