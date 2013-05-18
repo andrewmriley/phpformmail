@@ -6,14 +6,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 <!--
+body {  font-family: "Times New Roman", Times, serif; color: #000000; background-color: #FFFFFF}
+hr { margin-bottom: 2em; }
 .littletext {  font-size: 10pt}
 .newast {  color: #FF0000}
 .code {  font-family: "Courier New", Courier, mono; font-size: 12px; font-style: italic}
-.title {  font-family: "Times New Roman", Times, serif; font-size: 24pt; font-weight: bold}
 .title2 {  font-family: "Times New Roman", Times, serif; font-size: 18pt; font-weight: bold}
 .title3 {  font-family: "Times New Roman", Times, serif; font-size: 16pt; font-weight: bold}
 .copy_header {  font-family: Georgia, "Times New Roman", Times, serif; font-size: 10pt}
-body {  font-family: "Times New Roman", Times, serif; color: #000000; background-color: #FFFFFF}
 .sectiontitle { color: #000000; background-color: #CCCCCC}
 .sectionleft {  font-weight: bold; color: #000000; text-align: right; vertical-align: top; width: 100px}
 .sectionfield {  font-family: "Times New Roman", Times, serif; color: #000000}
@@ -21,63 +21,70 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 </style>
 </head>
 <body>
-<p class="title">PHPFormMail - Classic</p>
+<h1>PHPFormMail - Classic</h1>
 <ul>
   <li><a href="#copyright">Copyright and Header</a></li>
   <li><a href="#overview">Overview</a></li>
-  <li><a href="#setting_up">Setting Up the PHPFormMail Script</a> 
+  <li><a href="#setting_up">Setting Up the PHPFormMail Script</a>
     <ul>
-      <li><a href="#necessary_vars">Necessary Variables</a> 
-        <ul>
-          <li class="littletext"><a href="#referers">$referers</a></li>
-          <li class="littletext"><a href="#valid_env">$valid_env</a></li>
+      <li><a href="#necessary_vars">Necessary Variables</a>
+        <ul class="littletext">
+          <li><a href="#referers">$referers</a></li>
+          <li><a href="#valid_env">$valid_env</a></li>
+        </ul>
+      </li>
+      <li><a href="#optional_vars">Optional Variables</a>
+        <ul class="littletext">
+          <li><a href="#manual">MANUAL</a></li>
+          <li><a href="#check_referers">CHECK_REFERERS</a></li>
+          <li><a href="#recipient_array">$rcipient_array</a></li>
         </ul>
       </li>
     </ul>
   </li>
-  <li><a href="#form_config">Form Configuration</a> 
+  <li><a href="#form_config">Form Configuration</a>
     <ul>
-      <li><a href="#necessary_form_fields">Necessary Form Fields</a> 
+      <li><a href="#necessary_form_fields">Necessary Form Fields</a>
         <ul>
           <li class="littletext"><a href="#recipient">recipient</a></li>
         </ul>
       </li>
-      <li><a href="#optional_form_fields">Optional Form Fields</a> 
-        <ul>
-          <li class="littletext"><a href="#subject">subject</a></li>
-          <li class="littletext"><a href="#email">email</a></li>
-          <li class="littletext"><a href="#recipient_cc">recipient_cc</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#recipient_bcc">recipient_bcc</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#realname">realname</a></li>
-          <li class="littletext"><a href="#redirect">redirect</a></li>
-          <li><a href="#redirect_values" class="littletext">redirect_values</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#required">required</a></li>
-          <li class="littletext"><a href="#sort">sort</a></li>
-          <li class="littletext"><a href="#hidden">hidden</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#alias">alias</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#env_report">env_report</a></li>
-          <li class="littletext"><a href="#priority">priority</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#print_blank_fields">print_blank_fields</a></li>
-          <li class="littletext"><a href="#title">title</a></li>
-          <li class="littletext"><a href="#return_link_url">return_link_url</a></li>
-          <li class="littletext"><a href="#return_link_title">return_link_title</a></li>
-          <li class="littletext"><a href="#missing_fields_redirect">missing_fields_redirect</a></li>
-          <li class="littletext"><a href="#background">background</a></li>
-          <li class="littletext"><a href="#bgcolor">bgcolor</a></li>
-          <li class="littletext"><a href="#text_color">text_color</a></li>
-          <li class="littletext"><a href="#link_color">link_color</a></li>
-          <li class="littletext"><a href="#vlink_color">vlink_color</a></li>
-          <li class="littletext"><a href="#alink_color">alink_color</a></li>
-          <li class="littletext"><a href="#css">css</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#gmt_offset">gmt_offset</a><span class="newast">*</span></li>
-          <li class="littletext"><a href="#mail_newline">mail_newline</a><span class="newast">*</span></li>
+      <li><a href="#optional_form_fields">Optional Form Fields</a>
+        <ul class="littletext">
+          <li><a href="#subject">subject</a></li>
+          <li><a href="#email">email</a></li>
+          <li><a href="#recipient_cc">recipient_cc</a><span class="newast">*</span></li>
+          <li><a href="#recipient_bcc">recipient_bcc</a><span class="newast">*</span></li>
+          <li><a href="#realname">realname</a></li>
+          <li><a href="#redirect">redirect</a></li>
+          <li><a href="#redirect_values">redirect_values</a><span class="newast">*</span></li>
+          <li><a href="#required">required</a></li>
+          <li><a href="#sort">sort</a></li>
+          <li><a href="#hidden">hidden</a><span class="newast">*</span></li>
+          <li><a href="#alias">alias</a><span class="newast">*</span></li>
+          <li><a href="#alias_method">alias_method</a><span class="newast">*</span></li>
+          <li><a href="#env_report">env_report</a></li>
+          <li><a href="#priority">priority</a><span class="newast">*</span></li>
+          <li><a href="#print_blank_fields">print_blank_fields</a></li>
+          <li><a href="#title">title</a></li>
+          <li><a href="#return_link_url">return_link_url</a></li>
+          <li><a href="#return_link_title">return_link_title</a></li>
+          <li><a href="#missing_fields_redirect">missing_fields_redirect</a></li>
+          <li><a href="#background">background</a></li>
+          <li><a href="#bgcolor">bgcolor</a></li>
+          <li><a href="#text_color">text_color</a></li>
+          <li><a href="#link_color">link_color</a></li>
+          <li><a href="#vlink_color">vlink_color</a></li>
+          <li><a href="#alink_color">alink_color</a></li>
+          <li><a href="#css">css</a><span class="newast">*</span></li>
+          <li><a href="#gmt_offset">gmt_offset</a><span class="newast">*</span></li>
+          <li><a href="#mail_newline">mail_newline</a><span class="newast">*</span></li>
           <li class="littletext"><a href="#_regex">_regex</a><span class="newast">*</span></li>
         </ul>
       </li>
-      <li class="littletext"><a href="#add_notes">Additional Notes</a> 
+      <li><a href="#add_notes">Additional Notes</a>
         <ul>
-          <li class="littletext"><a href="#multiple">Multiple Results</a> (checkboxes 
-            and multiple lists)</li>
+          <li><a href="#multiple">Multiple Results</a> (checkboxes and multiple lists)</li>
           <li><a href="#reserved_words">Reserved Words</a></li>
         </ul>
       </li>
@@ -86,8 +93,7 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
   <li><a href="#donations">Donations</a></li>
 </ul>
 <hr size="1" />
-<br />
-<a name="copyright" class="title2" id="copyright">Copyright and Header</a> 
+<a name="copyright" class="title2" id="copyright">Copyright and Header</a>
 <pre>
 #############################################################################
 # PHPFormMail - Something we've always had...                               #
@@ -101,708 +107,720 @@ body {  font-family: "Times New Roman", Times, serif; color: #000000; background
 #############################################################################
 </pre>
 <hr size="1" />
-<a name="overview" class="title2" id="overview"> Overview</a> 
-<p>PHPFormMail is a universal WWW form to e-mail gateway.. PHPFormMail's main 
-  goal is to seamlessly take the place of it's PERL sister. All functions from 
-  PERL FormMail have an exact duplicate in PHPFormMail. PHPFormMail also has some 
-  extra functions built in, where ever you see a &quot;<span class="newast">*</span>&quot; 
-  (red star) is a new feature. Special thanks to Matt's Script Archive (<a href="http://www.worldwidemart.com/scripts">http://www.worldwidemart.com/scripts</a>) 
-  for if it wasn't for him/them/her (?) there would be no FormMail period. =:^)</p>
-<p>There is only one required form input tag which must be specified in order 
-  for this script to work with your existing forms. Other hidden configuration 
-  fields can also be used to enhance the operation of FormMail on your site. </p>
-<p> The anonymous WWW user must have the ability to read/execute the PHPFormMail.php 
-  script. If you have problems running a script with the .php extension, try .php3, 
-  .phtm, .phtml. If those do not work, please check with your system administrator 
-  for more help on running PHP scripts. </p>
+<a name="overview" class="title2" id="overview">Overview</a>
+<p>PHPFormMail is a universal WWW form to e-mail gateway.. PHPFormMail's main goal is to seamlessly take the place of it's PERL sister. All functions from PERL FormMail have an exact duplicate in PHPFormMail. PHPFormMail also has some extra functions built in, where ever you see a &quot;<span class="newast">*</span>&quot; (red star) is a new feature. Special thanks to Matt's Script Archive (<a href="http://www.worldwidemart.com/scripts">http://www.worldwidemart.com/scripts</a>) for if it wasn't for him/them/her (?) there would be no FormMail period. =:^)</p>
+<p>There is only one required form input tag which must be specified in order for this script to work with your existing forms. Other hidden configuration fields can also be used to enhance the operation of FormMail on your site. </p>
+<p> The anonymous WWW user must have the ability to read/execute the PHPFormMail.php script. If you have problems running a script with the .php extension, try .php3, .phtm, .phtml. If those do not work, please check with your system administrator for more help on running PHP scripts. </p>
 <hr size="1" />
-<br />
-<a name="setting_up" class="title2" id="setting_up"> Setting Up the PHPFormMail 
-Script</a> 
-<p>The PHPFormMail.php script does not have to be extensively configured in order 
-  to work. There are only two variables in the script in which you will need to 
-  modify.</p>
+<a name="setting_up" class="title2" id="setting_up">Setting Up the PHPFormMail Script</a>
+<p>The PHPFormMail.php script does not have to be extensively configured in order to work. There are only two variables in the script in which you will be required to modify. Note: For this section (Setting Up the PHPFormMail Script) you will need to edit the formmail.php.</p>
 <p><a name="necessary_vars" class="title3" id="necessary_vars">Necessary Variables</a></p>
 <p><a name="referers" class="code" id="referers"><strong>$referers = array(&quot;boaddrink.com&quot;,&quot;216.92.77.123&quot;);</strong></a></p>
-<p> This array allows you to define the domains that you will allow forms to reside 
-  on and use your PHPFormMail script. If a user tries to put a form on another 
-  server, that is not in your list, they will receive an error message when someone 
-  tries to fill out their form. By placing boaddrink in the $referers array, this 
-  DOES NOT allow www.boaddrink.com, ftp.boaddrink.com, any other http address 
-  with boaddrink.com in it. I included boaddrink.com's IP address to access this 
-  script as well, just to be on the safe side. As of version 1.5.0 you can now 
-  use regular expressions in the $referers array.<br />
+<p> This array allows you to define the domains that you will allow forms to reside on and use your PHPFormMail script. If a user tries to put a form on another server, that is not in your list, they will receive an error message when someone tries to fill out their form. By placing boaddrink in the $referers array, this DOES NOT allow www.boaddrink.com, ftp.boaddrink.com, any other http address with boaddrink.com in it. I included boaddrink.com's IP address to access this script as well, just to be on the safe side. As of version 1.5.0 you can now use regular expressions in the $referers array.<br />
   <br />
-  Note: <b>The domains listed in the $referers array must also include the domain 
-  that the e-mail is going to.</b><br />
+  Note: <b>The domains listed in the $referers array must also include the domain that the e-mail is going to.</b><br />
   <br />
-  Example: If the recipient of the e-mail is test@example.com and the form is 
-  hosted on boaddrink.com, your $referes array will have to look like<br />
+  Example: If the recipient of the e-mail is test@example.com and the form is hosted on boaddrink.com, your $referes array will have to look like<br />
   <br />
   $referers = array(&quot;boaddrink.com&quot;, &quot;example.com&quot;); <br />
   <br />
-  Remember, the domain name of the recipient's domain must be listed in the $referer 
-  array, even if the form isn't hosted on that domain. Rule of thumb, include 
-  the domain name that is hosting the form AND include the domain name of the 
-  recipients (This includes <a href="#recipient">recipient</a>, <a href="#recipient_cc">recipient_cc</a>, 
-  and <a href="recipient_bcc">recipient_bcc</a>). </p>
+  Remember, the domain name of the recipient's domain must be listed in the $referer array, even if the form isn't hosted on that domain. Rule of thumb, include the domain name that is hosting the form AND include the domain name of the recipients (This includes <a href="#recipient">recipient</a>, <a href="#recipient_cc">recipient_cc</a>, and <a href="recipient_bcc">recipient_bcc</a>).</p>
 <p>&nbsp;</p>
-<p><a name="valid_env" class="code" id="valid_env"><strong>$valid_env = array("REMOTE_HOST", 
-  "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");</strong></a></p>
-<p> This array allows you to define enviromental variables that can be reported. 
-  The odds are you won't need to change these. For more information on environmental 
-  variables, please see <a href="#env_report">env_report</a>. </p>
-<p>Your PHPFormMail is now configured. </p>
+<p><a name="valid_env" class="code" id="valid_env"><strong>$valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");</strong></a></p>
+<p>This array allows you to define enviromental variables that can be reported. The odds are you won't need to change these. For more information on environmental variables, please see <a href="#env_report">env_report</a>. </p>
+<p><a name="optional_vars" class="title3" id="optional_vars">Optional Variables</a></p>
+<p><a name="manual" class="code" id="valid_env"><strong>define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');</strong></a></p>
+<p>Modifying the URL listed in this constant will change the address that the script points to in the event of an error. Nine times out of ten you won't have to change this. </p>
+<p><a name="check_referer" class="code" id="valid_env"><strong>define('CHECK_REFERER', true);</strong></a></p>
+<p>This constant defines if the script should do referer checking. It it highly recomended that you keep this set to &quot;true&quot; since changing this to &quot;false&quot; could cause your script to become an open relay (ie: allowing spammers to use your server). The only time this constant comes up is when a user submits a form and has an overactive firewall that removes the HTTP_REFERER. In this case, you have two options, change this setting to false or tell the user to relax some of their security settings. </p>
+<p><a name="recipient_array" class="code" id="valid_env"><strong>$recipient_array = array();</strong></a></p>
+<p>This is the only Optional Variable that I recomend changing and using. This array allows you to list valid key/value pairs of e-mail addresses so you don't have to expose your e-mail address to the net. If you define ANY e-mail addresses in the $recipient_array then all forms using this script must pass keys to the script and not email addresses. The format is $recipient_array = array(<strong>key</strong> =&gt; <strong>value</strong>) and the key can be whatever you like. You'll want the value to be a valid e-mail address. Note: The domain of the e-mail address DOES NOT have to be added to the <a href="#referers">$referers</a>.</p>
+<p>I will present three different ways to setup this variable (from least secure to most secure). I would recomend you implement either either example #2 or #3. </p>
+<p>Example #1<br />
+  <span class="code">$recipient_array = array(1 =&gt; 'email@example.com', 2 =&gt; 'somebodyelse@example.com');</span></p>
+<p>Example #2<br />
+  <span class="code">$recipient_array = array('bob' =&gt; 'email@example.com', 'sally' =&gt; 'somebodyelse@example.com');</span></p>
+<p>Example #3<br />
+  <span class="code">$recipient_array = array('fcf7b465cc30923b02a8cecc2ede239331c7990e' =&gt; 'email@example.com', ' 2bd7df9fbc9f87040e617b5c09ad16aa85d73ecc ' =&gt; 'somebodyelse@example.com');</span></p>
+<p>Example #1 is the least secure, spammers could just keep trying numbers (1, 2, 3) to see who they can get.</p>
+<p>Example #2 is more secure since it doesn't follow a sequential pattern.</p>
+<p>Example #3 is the most secure of the three examples since it uses completely random number/letters.</p>
 <hr size="1" />
-<br />
-<a name="form_config" class="title2" id="form_config">Form Configuration</a> 
-<p>The action of your form needs to point towards this script (obviously), and 
-  the method must be POST or GET. Below is a list of form fields you can use and 
-  how to implement them. </p>
-<a name="necessary_form_fields" class="title3" id="necessary_form_fields"> Necessary 
-Form Fields</a> 
-<p>There is only one form field that you must have in your form, for PHPFormMail 
-  to work correctly. This is the recipient field. </p>
+<a name="form_config" class="title2" id="form_config">Form Configuration</a>
+<p>The action of your form needs to point towards this script (obviously), and the method must be POST or GET. Below is a list of form fields you can use and how to implement them. All fields listed below need to be added to an HTML form that you create. </p>
+<a name="necessary_form_fields" class="title3" id="necessary_form_fields"> Necessary Form Fields</a>
+<p>There is only one form field that you must have in your form, for PHPFormMail to work correctly. This is the recipient field. </p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr class="sectiontitle"> 
+  <tr class="sectiontitle">
     <td class="sectionleft"><a name="recipient" id="recipient">Field:</a></td>
     <td class="sectionfield">recipient</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field allows you to specify to whom you wish for your form results 
-      to be mailed. Most likely you will want to configure this option as a hidden 
-      form field with a value equal to that of your e-mail address.</td>
+    <td>This form field allows you to specify to whom you wish for your form results to be mailed. Most likely you will want to configure this option as a hidden form field with a value equal to that of your e-mail address.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td class="code">&lt;input type=&quot;hidden&quot; name="recipient" value="email@example.com"&gt;</td>
+    <td class="code"><p>Single Recipient <br />
+&lt;input type=&quot;hidden&quot; name="recipient" value="email@example.com"&gt;</p>
+      <p>Single Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient" value=&quot;bob&quot;&gt; </p>
+      <p>Multiple Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient" value=&quot;bob,sally&quot;&gt; </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any valid e-mail address or key from the <a href="#recipient_array">$recipient_array</a> </td>
   </tr>
 </table>
 <hr size="1" />
-<p><br />
-  <a name="optional_form_fields" class="title3" id="optional_form_fields"> Optional 
-  Form Fields</a></p>
+<p><a name="optional_form_fields" class="title3" id="optional_form_fields">Optional Form Fields</a></p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="subject" id="subject">Field:</a></td>
     <td class="sectionfield">subject</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>The subject field will allow you to specify the subject that you wish 
-      to appear in the e-mail that is sent to you after this form has been filled 
-      out. If you do not have this option turned on, then the script will default 
-      to a message subject: WWW Form Submission</td>
+    <td>The subject field will allow you to specify the subject that you wish to appear in the e-mail that is sent to you after this form has been filled out. If you do not have this option turned on, then the script will default to a message subject: WWW Form Submission</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you wish to choose what the subject is:<br /> <span class="code">&lt;input 
-      type=&quot;hidden&quot; name="subject" value="Your Subject"&gt;</span> <p>To 
-        allow the user to choose a subject:<br />
+    <td>If you wish to choose what the subject is:<br />
+      <span class="code">&lt;input type=&quot;hidden&quot; name="subject" value="Your Subject"&gt;</span>
+      <p>To allow the user to choose a subject:<br />
         <span class="code">&lt;input type=&quot;text&quot; name="subject"&gt;</span></p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="email" id="email">Field:</a></td>
     <td class="sectionfield">email</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field will allow the user to specify their return e-mail address. 
-      If you want to be able to return e-mail to your user, I strongly suggest 
-      that you include this form field and allow them to fill it in. This will 
-      be put into the From: field of the message you receive. If you want to require 
-      an email address with valid syntax, add this field name to the 'required' 
-      field. 
+    <td>This form field will allow the user to specify their return e-mail address. If you want to be able to return e-mail to your user, I strongly suggest that you include this form field and allow them to fill it in. This will be put into the From: field of the message you receive. If you want to require an email address with valid syntax, add this field name to the 'required' field.
       <p>To send e-mail to more than one address, use commas to seperate the addresses.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>Single Recipient:<br /> <span class="code">&lt;input type=&quot;text&quot; 
-      name="email" value=&quot;nobody@example.com&quot;&gt;</span> <p>Multiple 
-        Recipients:<br />
-        <span class="code">&lt;input type=&quot;text&quot; name="email" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> 
-      </p></td>
+    <td><span class="code">&lt;input type=&quot;text&quot; name="email"&gt;</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text</td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="recipient_cc" id="recipient_cc">Field:</a></td>
     <td class="sectionfield">recipient_cc<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field will allow you to carbon copy (CC) the the e-mail to the 
-      e-mail address listed. Use this only if you have the <a href="#email">email</a> 
-      field specified. This will cause two copies of the e-mail to be sent. The 
-      first to the address listed in the email field and the second to the address 
-      listed in the recipient_cc. 
+    <td>This form field will allow you to carbon copy (CC) the the e-mail to the e-mail address listed. Use this only if you have the <a href="#email">email</a> field specified.
       <p>To send e-mail to more than one address, use commas to seperate the addresses.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>Single Recipient:<br /> <span class="code">&lt;input type=&quot;text&quot; 
-      name="recipient_cc" value=&quot;nobody@example.com&quot;&gt;</span> <p>Multiple 
-        Recipients:<br />
-        <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" 
-        value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p></td>
+    <td>Single Recipient:<br />
+      <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;nobody@example.com&quot;&gt;</span>
+      <p>Multiple Recipients:<br />
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+      <p>Single Carbon Copied Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;bob&quot;&gt; </p>
+      <p>Multiple Carbon Copeid Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient_cc" value=&quot;bob,sally&quot;&gt; </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values:</td>
+    <td>Any valid e-mail address or key from the <a href="#recipient_array">$recipient_array</a> </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="recipient_bcc" id="recipient_bcc">Field:</a></td>
     <td class="sectionfield">recipient_bcc<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field will allow you to blind carbon copy (BCC) the the e-mail 
-      to the e-mail address listed. To use this fields, you don't have to specify 
-      the <a href="#email">email</a> field. This will cause the e-mail to be sent 
-      but the recipients listed in the recipient_bcc without the recipients to 
-      see who it was sent to. 
+    <td>This form field will allow you to blind carbon copy (BCC) the the e-mail to the e-mail address listed. To use this field, you don't have to specify the <a href="#email">email</a> field. This will cause the e-mail to be sent to the recipients listed in the recipient_bcc without the other recipients being able to see who it was sent to.
       <p>To send e-mail to more than one address, use commas to seperate the addresses.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>Single Recipient:<br /> <span class="code">&lt;input type=&quot;text&quot; 
-      name="recipient_bcc" value=&quot;nobody@example.com&quot;&gt;</span> <p>Multiple 
-        Recipients:<br />
-        <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" 
-        value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p></td>
+    <td>Single Recipient:<br />
+      <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;nobody@example.com&quot;&gt;</span>
+      <p>Multiple Recipients:<br />
+        <span class="code">&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;nobody@example.com,nobody@example1.com&quot;&gt;</span> </p>
+      <p>Single Blind Carbon Copied Recipient (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;bob&quot;&gt; </p>
+      <p>Multiple Blind Carbon Copied Recipients (using <a href="#recipient_array">$recipient_array</a> example #2):<br />
+&lt;input type=&quot;text&quot; name="recipient_bcc" value=&quot;bob,sally&quot;&gt; </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any valid e-mail address or key from the <a href="#recipient_array">$recipient_array</a> </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="realname" id="realname">Field:</a></td>
     <td class="sectionfield">realname</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>The realname form field will allow the user to input their real name. 
-      This field is useful for identification purposes and will also be put into 
-      the From: line of your message header. 
-      <p>Note: If realname does not exist as a field but firstname or lastname 
-        does, PHPFormMail will combine firstname and lastname to create the realname.</p></td>
+    <td>The realname form field will allow the user to input their real name. This field is useful for identification purposes and will also be put into the From: line of your message header.
+      <p>Note: If realname does not exist as a field but firstname or lastname does, PHPFormMail will combine firstname and lastname to create the realname.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
     <td class="code">&lt;input type=&quot;text&quot; name="realname"&gt;</td>
   </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
+  </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="redirect" id="redirect">Field:</a></td>
     <td class="sectionfield">redirect</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>If you wish to redirect the user to a different URL, rather than having 
-      them see the default response to the fill-out form, you can use this hidden 
-      variable to send them to a pre-made HTML page.</td>
+    <td>If you wish to redirect the user to a different URL, rather than having them see the default response to the fill-out form, you can use this hidden variable to send them to a pre-made HTML page.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
     <td><span class="code">&lt;input type=&quot;hidden&quot; name="redirect" value="http://your.host.com/to/file.html"&gt;</span></td>
   </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
+  </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="redirect_values" id="redirect_values">Field:</a></td>
     <td class="sectionfield">redirect_values</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This send the form results on to the redirect page (for further processing 
-      by your own script). You must specify <a href="#redirect">redirect</a> and/or 
-      <a href="#missing_fields_redirect">missing_fields_redirect</a> for this 
-      feature to work. <b>NOTE: You must use the GET method for this feature to 
-      work.</b></td>
+    <td>This send the form results on to the redirect page (for further processing by your own script). You must specify <a href="#redirect">redirect</a> and/or <a href="#missing_fields_redirect">missing_fields_redirect</a> for this feature to work. <b>NOTE: You must use the GET method for this feature to work.</b></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td><span class="code">&lt;input type=&quot;hidden&quot; name="redirect_values" 
-      value="true"&gt;</span></td>
+    <td><span class="code">&lt;input type=&quot;hidden&quot; name="redirect_values" value="true"&gt;</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="required" id="required">Field:</a></td>
     <td class="sectionfield">required</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>You can now require for certain fields in your form to be filled in before 
-      the user can successfully submit the form. Simply place all field names 
-      that you want to be mandatory into this field. If the required fields are 
-      not filled in, the user will be notified of what they need to fill in, and 
-      a link back to the form they just submitted will be provided. 
-      <p>To use a customized error page, see '<a href="#missing_fields_redirect">missing_fields_redirect</a>' 
-      </p></td>
+    <td>You can now require for certain fields in your form to be filled in before the user can successfully submit the form. Simply place all field names that you want to be mandatory into this field. If the required fields are not filled in, the user will be notified of what they need to fill in, and a link back to the form they just submitted will be provided.
+      <p>To use a customized error page, see '<a href="#missing_fields_redirect">missing_fields_redirect</a>' <br />
+        This will only check to see if there is something in the field it will not validate the syntax of what is in that field. To do that see <a href="#_regex">_regex</a> </p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you want to require that they fill in the email and phone fields in 
-      your form, so that you can reach them once you have received the mail, use 
-      a syntax like: 
+    <td>If you want to require that they fill in the email and phone fields in your form, so that you can reach them once you have received the mail, use a syntax like:
       <p class="code">&lt;input type=&quot;hidden&quot; name="required" value="email,phone"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Valid field names seperated by commas </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="sort" id="sort">Field:</a></td>
     <td class="sectionfield">sort</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>There are three ways to sort the output of the form. 
+    <td>There are three ways to sort the output of the form.
       <ul>
-        <li>Alphabetic<span class="newast">*</span>: An alphabetic listing based 
-          on the field names.</li>
-        <li>Reverse Alphabetic<span class="newast">*</span>: A reverse alphabetic 
-          listing based on the field names. </li>
-        <li>Order: Allows you to specify the order that you would like the fields 
-          to be in. Note: If you have five form variables, and you only wish to 
-          move two of them to the begining of the e-mail and allow the others 
-          to stay in their natural order, you just need to specify the two variables. 
-          The remaining variables will be included in the e-mail.</li>
+        <li>Alphabetic<span class="newast">*</span>: An alphabetic listing based on the field names.</li>
+        <li>Reverse Alphabetic<span class="newast">*</span>: A reverse alphabetic listing based on the field names. </li>
+        <li>Order: Allows you to specify the order that you would like the fields to be in. Note: If you have five form variables, and you only wish to move two of them to the begining of the e-mail and allow the others to stay in their natural order, you just need to specify the two variables. The remaining variables will be included in the e-mail.</li>
       </ul></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td> If you want to require that they fill in the email and phone fields in 
-      your form, so that you can reach them once you have received the mail, use 
-      a syntax like: 
+    <td> If you want to require that they fill in the email and phone fields in your form, so that you can reach them once you have received the mail, use a syntax like:
       <p>For Alphabetic listings<span class="newast">*</span>:<br />
         <span class="code">&lt;input type=&quot;hidden&quot; name="sort" value=&quot;alphabetic"&gt;</span></p>
       <p>For Reverse Alphabetic listings<span class="newast">*</span>:<br />
-        <span class="code">&lt;input type=&quot;hidden&quot; name="sort" value=&quot;alphabetic"&gt;</span></p>
-      <p>For Order listings (This would list the fields in the order of: name, 
-        comment, email):<br />
-        <span class="code">&lt;input type=&quot;hidden&quot; name="sort" value=&quot;order:name,comment,email"&gt;</span> 
-      </p></td>
+        <span class="code">&lt;input type=&quot;hidden&quot; name="sort" value=&quot;ralphabetic"&gt;</span></p>
+      <p>For Order listings (This would list the fields in the order of: name, comment, email):<br />
+        <span class="code">&lt;input type=&quot;hidden&quot; name="sort" value=&quot;order:name,comment,email"&gt;</span> </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>alphabetic, ralphabetic, order </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="hidden" id="hidden">Field:</a></td>
     <td class="sectionfield">hidden<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td> Allows you to hide the results of a field from the HTML output. The results 
-      will be replaced with <i>(hidden)</i> in the HTML output but will still 
-      appear in the e-mail you receive. Fields are comma separated.</td>
+    <td> Allows you to hide the results of a field from the HTML output. The results will be replaced with <i>(hidden)</i> in the HTML output but will still appear in the e-mail you receive. Fields are comma separated.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td> If you want to hide the results of the fields my_password and home_address, 
-      you would use syntax like: 
+    <td> If you want to hide the results of the fields my_password and home_address, you would use syntax like:
       <p><span class="code">&lt;input type=&quot;hidden&quot; name="hidden" value=&quot;my_password,home_address"&gt;</span></p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Valid field names seperated by commas </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="alias" id="alias">Field:</a></td>
     <td class="sectionfield">alias<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td> Allows you to add a more user friendly name for the field. This user 
-      friendly name is only displayed in the HTML output and as no effect on the 
-      e-mail you receive. Format is fieldname=friendlyname and is comma separated.</td>
+    <td><p>Allows you to add a more user friendly name for the field. This user friendly name is only displayed in the HTML output and as no effect on the e-mail you receive. Format is fieldname=friendlyname and is comma separated.</p>
+      <p>Please use <a href="#alias_method">alias_method</a> if you would like the alias to be shown in the e-mail. </p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td> To add the alias of &quot;E-mail Address&quot; to the field of &quot;email&quot; 
-      and the alias of &quot;First Name&quot; to the field of firstname use: 
-      <p><span class="code">&lt;input type=&quot;hidden&quot; name="alias" value=&quot;email=E-mail 
-        Address,firstname=First Name"&gt;</span> </p></td>
+    <td> To add the alias of &quot;E-mail Address&quot; to the field of &quot;email&quot; and the alias of &quot;First Name&quot; to the field of firstname use:
+      <p><span class="code">&lt;input type=&quot;hidden&quot; name="alias" value=&quot;email=E-mail Address,firstname=First Name"&gt;</span> </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Valid field names followed by &quot;=&quot; and then the text you wish to be shown. Fields should be seperated by commas </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
+    <td class="sectionleft"><a name="alias" id="alias">Field:</a></td>
+    <td class="sectionfield">alias_method<span class="newast">*</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Description:</td>
+    <td> Allows to specify if the <a href="#alias">alias</a> will be used in the HTML results, e-mail or both. This field is not required if you only wish for the alias to be shown in the HTML output. </td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Syntax:</td>
+    <td> To show the alias in both the HTML output and the e-mail:
+      <p><span class="code">&lt;input type=&quot;hidden&quot; name="alias_method" value=&quot;both"&gt;</span> </p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>html, email, both </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table border="0" cellpadding="5" cellspacing="0" width="90%">
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="env_report" id="env_report">Field:</a></td>
     <td class="sectionfield">env_report</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Allows you to have Environment variables included in the e-mail message 
-      you receive after a user has filled out your form. Useful if you wish to 
-      know what browser they were using, what domain they were coming from or 
-      any other attributes associated with environment variables. Each enviroment 
-      variable is sepperated by a comma. The following is a short list of valid 
-      environment variables that might be useful: 
+    <td>Allows you to have Environment variables included in the e-mail message you receive after a user has filled out your form. Useful if you wish to know what browser they were using, what domain they were coming from or any other attributes associated with environment variables. Each enviroment variable is sepperated by a comma. The following is a short list of valid environment variables that might be useful:
       <p>&nbsp;</p>
       <table border="0" cellspacing="0" cellpadding="5">
-        <tr> 
+        <tr>
           <td valign="top">REMOTE_HOST</td>
           <td valign="top">-</td>
           <td>Sends the hostname making the request.</td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">REMOTE_ADDR</td>
           <td valign="top">-</td>
           <td>Sends the IP address of the remote host making the request.</td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">REMOTE_USER</td>
           <td valign="top">-</td>
-          <td>If server supports authentication and script is protected, this 
-            is the username they have authenticated as. *This is not usually set.*</td>
+          <td>If server supports authentication and script is protected, this is the username they have authenticated as. *This is not usually set.*</td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">HTTP_USER_AGENT</td>
           <td valign="top">-</td>
           <td>The browser the client is using to send the request.</td>
         </tr>
       </table>
-      <p>For more environmental variables, please see<br />
-        <a href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html" target="_blank">http://hoohoo.ncsa.uiuc.edu/cgi/env.html</a></p>
       <p>Remember to allow the enviromental variables in <a href="#valid_env">$valid_env</a>.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you wanted to see the host making the request and the browser the user 
-      is using in your our e-mail , you would put the following into your form: 
+    <td>If you wanted to see the host making the request and the browser the user is using in your our e-mail , you would put the following into your form:
       <p class="code">&lt;input type=&quot;hidden&quot; name="env_report" value="REMOTE_HOST,HTTP_USER_AGENT"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>See <a href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html" target="_blank">http://hoohoo.ncsa.uiuc.edu/cgi/env.html</a></td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="priority" id="priority">Field:</a></td>
     <td class="sectionfield">priority<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>priority allows you to modify the priority of the e-mail you will receive. 
-      3 is normail priority for an e-mail (default) and 1 is the highest priority.</td>
+    <td>priority allows you to modify the priority of the e-mail you will receive. 3 is normail priority for an e-mail (default) and 1 is the highest priority.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you wish to have the highest priority:<br /> <span class="code">&lt;input 
-      type=&quot;hidden&quot; name="priority" value="1"&gt;</span> <p>If you wish 
-        to have the lowest priority (normal):<br />
+    <td>If you wish to have the highest priority:<br />
+      <span class="code">&lt;input type=&quot;hidden&quot; name="priority" value="1"&gt;</span>
+      <p>If you wish to have the lowest priority (normal):<br />
         <span class="code">&lt;input type=&quot;hidden&quot; name="priority" value="3"&gt;</span></p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>1, 2, or 3 </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="print_blank_fields" id="print_blank_fields">Field:</a></td>
     <td class="sectionfield">print_blank_fields</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>print_blank_fields allows you to request that all form fields are printed 
-      in the return HTML and e-mail, regardless of whether or not they were filled 
-      in. PHPFormMail defaults to turning this off, so that unused form fields 
-      aren't e-mailed.</td>
+    <td>print_blank_fields allows you to request that all form fields are printed in the return HTML and e-mail, regardless of whether or not they were filled in. PHPFormMail defaults to turning this off, so that unused form fields aren't e-mailed.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you want to print all blank fields:<br /> <span class="code">&lt;input 
-      type=&quot;hidden&quot; name="print_blank_fields" value="true"&gt;</span></td>
+    <td>If you want to print all blank fields:<br />
+      <span class="code">&lt;input type=&quot;hidden&quot; name="print_blank_fields" value="true"&gt;</span></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Booleans (True or False) </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="title" id="title">Field:</a></td>
     <td class="sectionfield">title</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field allows you to specify the title and header that will appear 
-      on the resulting page if you do not specify a redirect URL.</td>
+    <td>This form field allows you to specify the title and header that will appear on the resulting page if you do not specify a redirect URL.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>If you wanted a title of 'Feedback Form Results': 
-      <p class="code">&lt;input type=&quot;hidden&quot; name="title" value="Feedback 
-        Form Results"&gt;</p></td>
+    <td>If you wanted a title of 'Feedback Form Results':
+      <p class="code">&lt;input type=&quot;hidden&quot; name="title" value="Feedback Form Results"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="return_link_url" id="return_link_url">Field:</a></td>
     <td class="sectionfield">return_link_url</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This field allows you to specify a URL that will appear, as return_link_title, 
-      on the following report page. This field will not be used if you have the 
-      redirect field set, but it is useful if you allow the user to receive the 
-      report on the following page, but want to offer them a way to get back to 
-      your main page.</td>
+    <td>This field allows you to specify a URL that will appear, as return_link_title, on the following report page. This field will not be used if you have the redirect field set, but it is useful if you allow the user to receive the report on the following page, but want to offer them a way to get back to your main page.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td class="code"> &lt;input type=&quot;hidden&quot; name="return_link_url" 
-      value="http://your.host.com/main.html"&gt;</td>
+    <td class="code">&lt;input type=&quot;hidden&quot; name="return_link_url" value="http://your.host.com/main.html"&gt;</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="return_link_title" id="return_link_title">Field:</a></td>
     <td class="sectionfield">return_link_title</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This is the title that will be used to link the user back to the page 
-      you specify with <a href="#return_link_url">return_link_url</a>. The two 
-      fields will be shown on the resulting form page as:</td>
+    <td>This is the title that will be used to link the user back to the page you specify with <a href="#return_link_url">return_link_url</a>. The two fields will be shown on the resulting form page as:</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td class="code"> &lt;input type=&quot;hidden&quot; name="return_link_title" 
-      value="Back to Main Page"&gt;</td>
+    <td class="code">&lt;input type=&quot;hidden&quot; name="return_link_title" value="Back to Main Page"&gt;</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="missing_fields_redirect" id="missing_fields_redirect">Field:</a></td>
     <td class="sectionfield">missing_fields_redirect</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field allows you to specify a URL that users will be redirected 
-      to if there are fields listed in the required form field that are not filled 
-      in. This is so you can customize an error page instead of displaying the 
-      default.</td>
+    <td>This form field allows you to specify a URL that users will be redirected to if there are fields listed in the required form field that are not filled in. This is so you can customize an error page instead of displaying the default.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td class="code"> &lt;input type=&quot;hidden&quot; name="missing_fields_redirect" 
-      value="http://your.host.com/error.html"&gt;</td>
+    <td class="code">&lt;input type=&quot;hidden&quot; name="missing_fields_redirect" value="http://your.host.com/error.html"&gt;</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="background" id="background">Field:</a></td>
     <td class="sectionfield">background</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field allow you to specify a background image that will appear 
-      if you do not have the redirect field set. This image will appear as the 
-      background to the form results page.</td>
+    <td>This form field allow you to specify a background image that will appear if you do not have the redirect field set. This image will appear as the background to the form results page.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td class="code"> &lt;input type=&quot;hidden&quot; name="background" value="http://your.host.xxx/image.gif"&gt;</td>
+    <td class="code">&lt;input type=&quot;hidden&quot; name="background" value="http://your.host.xxx/image.gif"&gt;</td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="bgcolor" id="bgcolor">Field:</a></td>
     <td class="sectionfield">bgcolor</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This form field allow you to specify a bgcolor for the form results page 
-      in much the way you specify a background image.</td>
+    <td>This form field allow you to specify a bgcolor for the form results page in much the way you specify a background image.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>For a background color of White: 
+    <td>For a background color of White:
       <p class="code">&lt;input type=&quot;hidden&quot; name="bgcolor" value="#FFFFFF"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="text_color" id="text_color">Field:</a></td>
     <td class="sectionfield">text_color</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>This field works in the same way as bgcolor, except that it will change 
-      the color of your text.</td>
+    <td>This field works in the same way as bgcolor, except that it will change the color of your text.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>For a text color of Black: 
+    <td>For a text color of Black:
       <p class="code">&lt;input type=&quot;hidden&quot; name="text_color" value="#000000"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="link_color" id="link_color">Field:</a></td>
     <td class="sectionfield">link_color</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Changes the color of links on the resulting page. Works in the same way 
-      as text_color.</td>
+    <td>Changes the color of links on the resulting page. Works in the same way as text_color.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>For a link color of Red: 
+    <td>For a link color of Red:
       <p class="code">&lt;input type=&quot;hidden&quot; name="link_color" value="#FF0000"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="vlink_color" id="vlink_color">Field:</a></td>
     <td class="sectionfield">vlink_color</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Changes the color of visited links on the resulting page. Works exactly 
-      the same as link_color.</td>
+    <td>Changes the color of visited links on the resulting page. Works exactly the same as link_color.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>For a visited link color of Blue: 
+    <td>For a visited link color of Blue:
       <p class="code">&lt;input type=&quot;hidden&quot; name="vlink_color" value="#0000FF"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="alink_color" id="alink_color">Field:</a></td>
     <td class="sectionfield">alink_color</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Changes the color of active links on the resulting page. Works exactly 
-      the same as link_color.</td>
+    <td>Changes the color of active links on the resulting page. Works exactly the same as link_color.</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>For a active link color of Blue: 
+    <td>For a active link color of Blue:
       <p class="code">&lt;input type=&quot;hidden&quot; name="alink_color" value="#0000FF"&gt;</p></td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="gmt_offset" id="gmt_offset">Field:</a></td>
     <td class="sectionfield">gmt_offset<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Allows you to specify your GMT offset (+/-) so the time reported in the 
-      e-mail will match your time zone. (Default is your servers time zone)</td>
+    <td>Allows you to specify your GMT offset (+/-) so the time reported in the e-mail will match your time zone. (Default is your servers time zone)</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>To change the time into American EST: 
+    <td>To change the time into American EST:
       <p class="code">&lt;input type=&quot;hidden&quot; name="gmt_offset" value="-5"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any integer (positive or negative) </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="mail_newline" id="mail_newline">Field:</a></td>
     <td class="sectionfield">mail_newline<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td><p>Allows you to specify the type of linebreak in your e-mail output. 
-        Only change if your e-mail is listed all on one line.</p>
+    <td><p>Allows you to specify the type of linebreak in your e-mail output. Only change if your e-mail is listed all on one line.</p>
       <p>1 \n (default)<br />
         2 \r\n<br />
         3 \r</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>To change your linebreak to \r\n: 
+    <td>To change your linebreak to \r\n:
       <p class="code">&lt;input type=&quot;hidden&quot; name="mail_newline" value="2"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>1, 2, or 3 </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="css" id="css">Field:</a></td>
     <td class="sectionfield">css<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
     <td>Allows for the results/error page to link to a Cascading Style Sheet (css).</td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>To link to main.css: 
+    <td>To link to main.css:
       <p class="code">&lt;input type=&quot;hidden&quot; name="css" value="http://your.host.xxx/main.css"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any text </td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <table border="0" cellpadding="5" cellspacing="0" width="90%">
-  <tr bgcolor="#CCCCCC"> 
+  <tr bgcolor="#CCCCCC">
     <td class="sectionleft"><a name="_regex" id="_regex">Field:</a></td>
     <td class="sectionfield">_regex<span class="newast">*</span></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Description:</td>
-    <td>Allows for regular expression comparisons on form results. For a field 
-      to be checked, it must also be listed in <a href="#required">required</a>. 
+    <td>Allows for regular expression comparisons on form results. For a field to be checked, it must also be listed in <a href="#required">required</a>.
       <p>To check a field, append _regex to the hidden field name.</p>
-      <p>Note: This function uses <a href="http://www.php.net/manual/en/function.eregi.php" target="_blank">eregi()</a> 
-        so you must use postix regular expressions.</p></td>
+      <p>Note: This function uses <a href="http://www.php.net/manual/en/function.eregi.php" target="_blank">eregi()</a> so you must use postix regular expressions.</p></td>
   </tr>
-  <tr> 
+  <tr>
     <td class="sectionleft">Syntax:</td>
-    <td>To check that the date field is in propper date format: 
+    <td>To check that the date field is in propper date format:
       <p class="code">&lt;input type=&quot;hidden&quot; name="date_regex" value="$[0-9{4}-[0-9]{2}-[0-9]{2}$"&gt;</p></td>
+  </tr>
+  <tr>
+    <td class="sectionleft">Valid Values: </td>
+    <td>Any valid postix regular expression </td>
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>Any other form fields that appear in your script will be mailed back to you 
-  and displayed on the resulting page if you do not have the redirect field set. 
-  There is no limit as to how many other form fields you can use with this form, 
-  except the limits imposed by browsers and your server.</p>
+<p>Any other form fields that appear in your script will be mailed back to you and displayed on the resulting page if you do not have the redirect field set. There is no limit as to how many other form fields you can use with this form, except the limits imposed by browsers and your server.</p>
 <p>&nbsp;</p>
 <p><a name="add_notes" class="title3" id="add_notes">Additional Notes</a> </p>
 <p><strong><a name="multiple" id="multiple">Multiple Results</a></strong> </p>
-<p>When using checkboxes and multiple selection lists, you'll need to add [] to 
-  the end of the name. When the [] is added, PHPFormMail can then properly process 
-  the field and print it out in a comma separated format.</p>
+<p>When using checkboxes and multiple selection lists, you'll need to add [] to the end of the name. When the [] is added, PHPFormMail can then properly process the field and print it out in a comma separated format.</p>
 <p><strong><a name="reserved_words" id="reserved_words">Reserved Words</a></strong></p>
-<p>Here is the list of reserved words. Naming a field name any of the following 
-  could cause unexpected results:<br />
-  recipient, subject, required, redirect, print_blank_fields, env_report, sort, 
-  missing_fields_redirect, title, bgcolor, text_color, link_color, alink_color, 
-  vlink_color, background, subject, title, link, css, return_link_title, return_link_url, 
-  recipient_cc, recipient_bcc, priority, redirect_values, hidden, alias </p>
+<p>Here is the list of reserved words. Naming a field name any of the following could cause unexpected results:<br />
+  recipient, subject, required, redirect, print_blank_fields, env_report, sort, missing_fields_redirect, title, bgcolor, text_color, link_color, alink_color, vlink_color, background, subject, title, link, css, return_link_title, return_link_url, recipient_cc, recipient_bcc, priority, redirect_values, hidden, alias, mail_newline, gmt_offset, alias_method </p>
 <hr size="1" />
-<br />
-<a name="donations" class="title2" id="donations">Donations</a> 
-<p>As you know, most of the software I release is free, and will always be free. 
-  Keep in mind that this donation page isn't for me to profit, it's to allow me 
-  to continue developing free software and to keep boaddrink.com for you, the 
-  user. Please remember that this software is free for you to download and use 
-  but that doesn't mean it's not worth anything. You can donate any amount of 
-  money you wish... from $1 to $1,000,000. While a million dollars would be nice 
-  don't be pressured, any amount helps, even one dollar.</p>
+<a name="donations" class="title2" id="donations">Donations</a>
+<p>As you know, most of the software I release is free, and will always be free. Keep in mind that this donation page isn't for me to profit, it's to allow me to continue developing free software and to keep boaddrink.com for you, the user. Please remember that this software is free for you to download and use but that doesn't mean it's not worth anything. You can donate any amount of money you wish... from $1 to $1,000,000. While a million dollars would be nice don't be pressured, any amount helps, even one dollar.</p>
 <p>If you wish to donate, please visit <a href="http://www.boaddrink.com/donate.php" target="_blank">http://www.boaddrink.com/donate.php</a></p>
 <p>Thanks,<br />
   Andrew Riley</p>
 <hr size="1" />
-<span class="littletext">Copyright 2002 Andrew Riley</span> 
-<p align="right"><a href="http://validator.w3.org/check/referer"><img
-        src="images/valid-xhtml10.png"
-        alt="Valid XHTML 1.0!" height="31" width="88" border="0" /></a></p>
+<span class="littletext">Copyright 2002 Andrew Riley</span>
+<p align="right"><a href="http://validator.w3.org/check/referer"><img src="images/valid-xhtml10.png"alt="Valid XHTML 1.0!" height="31" width="88" border="0" /></a></p>
 </body>
 </html>

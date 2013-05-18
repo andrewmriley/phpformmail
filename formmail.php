@@ -1,52 +1,53 @@
 <?PHP
-define('VERSION','Classic v1.06.0');
+define('VERSION','Classic v1.07.0');
 define('MANUAL','http://www.boaddrink.com/projects/phpformmail/readme.php');
 define('CHECK_REFERER', true);
 
 // +------------------------------------------------------------------------+
 // | PHPFormMail                                                            |
-// | Copyright (c) 1999 Andrew Riley (webmaster@boaddrink.com)		    |
-// |									    |
-// | This program is free software; you can redistribute it and/or 	    |
+// | Copyright (c) 1999 Andrew Riley (webmaster@boaddrink.com)              |
+// |                                                                        |
+// | This program is free software; you can redistribute it and/or          |
 // | modify it under the terms of the GNU General Public License            |
-// | as published by the Free Software Foundation; either version 2	    |
-// | of the License, or (at your option) any later version.		    |
-// |									    |
-// | This program is distributed in the hope that it will be useful,	    |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of	    |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the     |
+// | as published by the Free Software Foundation; either version 2         |
+// | of the License, or (at your option) any later version.                 |
+// |                                                                        |
+// | This program is distributed in the hope that it will be useful,        |
+// | but WITHOUT ANY WARRANTY; without even the implied warranty of         |
+// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the           |
 // | GNU General Public License for more details.                           |
-// |									    |
+// |                                                                        |
 // | You should have received a copy of the GNU General Public License	    |
 // | along with this program; if not, write to the Free Software            |
 // | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, |
 // | USA.                                                                   |
-// |									    |
+// |                                                                        |
 // +------------------------------------------------------------------------+
-// |									    |
+// |                                                                        |
 // | If you run into any problems, pleas read the readme_formmail.txt.	    |
-// | If that does not help, check out http://www.boaddrink.com.		    |
-// |									    |
+// | If that does not help, check out http://www.boaddrink.com.             |
+// |                                                                        |
 // | For more info, please visit http://www.boaddrink.com or read the       |
 // | readme file included.                                                  |
 // +------------------------------------------------------------------------+
-// |									    |
-// | Value array fix by: Konrad Maqestieau				    |
-// | check_recipients reset() fix by: Don				    |
-// | servertime_offset code by: desolate
-// |									    |
-// +------------------------------------------------------------------------+							    |
+// |                                                                        |
+// | Value array fix by: Konrad Maqestieau                                  |
+// | check_recipients reset() fix by: Don                                   |
+// | servertime_offset code by: desolate                                    |
+// |                                                                        |
+// +------------------------------------------------------------------------+
 
 $referers = array('www.example.com', 'example.com');
 
 $valid_env = array('REMOTE_HOST', 'REMOTE_ADDR', 'REMOTE_USER', 'HTTP_USER_AGENT');
 
+$recipient_array = array();
+
 // +------------------------------------------------------------------------+
-// | STOP EDITING! The only two variables that need to be updated are       |
-// | $referers and $valid_env                                               |
+// | STOP EDITING! The only two required variables that need to be updated  |
+// | are $referers and $valid_env                                           |
 // +------------------------------------------------------------------------+
 
-$recipients = $referers;
 $errors = $fieldname_lookup = array();
 $invis_array = array('recipient','subject','required','redirect',
 		     'print_blank_fields','env_report','sort',
@@ -55,8 +56,8 @@ $invis_array = array('recipient','subject','required','redirect',
 		     'vlink_color','background','subject','title',
 		     'link','css','return_link_title',
 		     'return_link_url','recipient_cc','recipient_bcc',
-                     'priority','redirect_values','hidden','alias',
-                     'mail_newline', 'gmt_offset');
+				 'priority','redirect_values','hidden','alias',
+         'mail_newline', 'gmt_offset', 'alias_method');
 
 /****************************************************************
  * fake_in_array() is only used in PHP3 since PHP4 has a native	*
@@ -100,7 +101,7 @@ function check_referer($referers)
 			}
 			return $found;
 		} else {
-			$errors[] = '0|Sorry, but I cannot figure out who sent you here.  Your browser is not sending an HTTP_REFERER.  If you are using Norton Firewall (any version), please see the <a href="http://service1.symantec.com/SUPPORT/nip.nsf/5a5e9c8a8ac2ec3c882568f60060f23a/0181a150098795a285256910005e6f0d?OpenDocument" target="_blank">Norton support site</a>.';
+			$errors[] = '0|Sorry, but I cannot figure out who sent you here.  Your browser is not sending an HTTP_REFERER.  This could be caused by a firewall or browser that removes the HTTP_REFERER from each HTTP request you submit.';
 			error_log('[PHPFormMail] HTTP_REFERER not defined. Browser: ' . getenv('HTTP_USER_AGENT') . '; Client IP: ' . getenv('REMOTE_ADDR') . '; Request Method: ' . getenv('REQUEST_METHOD') . ';', 0);
 			return false;
 		}
@@ -114,19 +115,19 @@ function check_referer($referers)
 /****************************************************************
  * check_recipients() breaks up the recipents e-mail addresses	*
  * and then crossrefrences the domains that are legal referers	*
- * Function added in 1.3.1					*
+ * Function added in 1.3.1                                      *
  ****************************************************************/
 
-function check_recipients($valid_recipients, $recipient_list)
+function check_recipients($recipient_list)
 {
-	global $errors;
+	global $errors, $referers;
 	$recipients_ok = true;
 	$recipient_list = explode(',', $recipient_list);
 	while (list(,$recipient) = each($recipient_list)) {
 		$recipient_domain = false;
 		$recipient = trim($recipient);
-		reset($valid_recipients);
-		while ((list(,$stored_domain) = each($valid_recipients)) && ($recipient_domain == false)) {
+		reset($referers);
+		while ((list(,$stored_domain) = each($referers)) && ($recipient_domain == false)) {
 			if (eregi('^[_\.a-z0-9-]*@' . $stored_domain . '$', $recipient))
 				$recipient_domain = true;
 		}
@@ -137,7 +138,35 @@ function check_recipients($valid_recipients, $recipient_list)
 	}
 	if (!$recipients_ok)
 		$errors[] = '1|You are trying to send mail to a domain that is not in the allowed recipients list.   Please read the manual section titled &quot;<a href="' . MANUAL . '#setting_up" target="_blank">Setting Up the PHPFormMail Script</a>&quot;.';
-	return $recipients_ok;
+	return join(',', $recipient_list);
+}
+
+/****************************************************************
+ * map_recipients() takes the array and maps them to the proper *
+ * e-mail addresses from $recipient_array.  If this function is *
+ * called then the e-mail addresses are not checked against the *
+ * referer array.                                               *
+ * Function added in 1.7.0                                      *
+ ****************************************************************/
+
+function map_recipients($recipient_list)
+{
+	global $errors, $recipient_array;
+	$recipients_ok = true;
+	$recipient_list = explode(',',$recipient_list);
+	while (list(,$val) = each($recipient_list)){
+		$val = trim($val);
+		if(isset($recipient_array[$val]))
+			$output[] = $recipient_array[$val];
+		else
+			$recipients_ok = false;
+	}
+	if (!$recipients_ok)
+		$errors[] = '1|You are trying to send mail to an address that is not listed in the recipient array.';
+	if (isset($output))
+		return join(',', $output);
+	else
+		return null;
 }
 
 /****************************************************************
@@ -194,7 +223,7 @@ function error()
 	} else {
 		if(!isset($form['title']))
 			$form['title'] = 'PHPFormMail - Error';
-		$output = "<div class=\"title\">The following errors were found:</div>\n<ul>\n";
+		$output = "<h1>The following errors were found:</h1>\n<ul>\n";
 		$crit_error = 0;
 		while (list(,$val) = each ($errors)) {
 			list($crit,$message) = explode('|',$val);
@@ -326,7 +355,12 @@ function alias_fields()
 
 function send_mail()
 {
-	global $form, $invis_array, $valid_env, $in_array_func, $errors;
+	global $form, $invis_array, $valid_env, $in_array_func, $fieldname_lookup, $errors;
+	
+	if (!isset($form['subject']))
+			$form['subject'] = 'WWW Form Submission';
+	if (!isset($form['email']))
+			$form['email'] = 'email@example.com';
 	
 	switch ($form['mail_newline']) {
 		case 2:		$mail_newline = "\r";
@@ -354,9 +388,15 @@ function send_mail()
 		$mailbody.= $form['email'] . ' on ' . $mail_date . $mail_newline . $mail_newline;
 
 	reset($form);
+	
 	while (list($key,$val) = each($form)) {
-		if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val)))
-				$mailbody .= $key . ': ' . $val . $mail_newline;
+		if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
+				if(($form['alias_method'] == 'email') || ($form['alias_method'] == 'both'))
+					$mailbody .= $fieldname_lookup[$key];
+				else
+					$mailbody .= $key;
+				$mailbody .= ': ' . $val . $mail_newline;
+		}
 	}
 
 	if (isset($form['env_report'])) {
@@ -364,7 +404,7 @@ function send_mail()
 		$mailbody .= $mail_newline . $mail_newline . "-------- Env Report --------" . $mail_newline;
 		while (list(,$val) = each($temp_env_report)) {
 			if ($in_array_func($val,$valid_env))
-				$mailbody .= $val . ': ' . getenv($val) . $mail_newline;
+					$mailbody .= $val . ': ' . getenv($val) . $mail_newline;
 		}
 	}
 
@@ -392,7 +432,7 @@ function send_mail()
 	$mail_status = mail($form['recipient'], $form['subject'], $mailbody, $mail_header);
 	if (!$mail_status) {
 		 $errors[] = '1|Message could not be sent due to an error while trying to send the mail.';
-                 error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
+     error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
 	}
 	return $mail_status;
 }
@@ -411,27 +451,35 @@ function send_mail()
 function output_html($body)
 {
 	global $form;
+	
+	$bgcolor	= isset($form['bgcolor']) ? ('background-color: ' . htmlspecialchars($form['bgcolor']) . ';') : ('background-color: #FFF;');
+	$background = isset($form['background']) ? ('background-image: url(' . htmlspecialchars($form['background']) . ');') : NULL;
+	$text_color	= isset($form['text_color']) ? ('color: ' . htmlspecialchars($form['text_color']) . ';') : ('color: #000;');
+	$link_color	= isset($form['link_color']) ? ('color: ' . htmlspecialchars($form['link_color']) . ';') : NULL;
+	$alink_color	= isset($form['alink_color']) ? ('color: ' . htmlspecialchars($form['alink_color']) . ';') : NULL;
+	$vlink_color	= isset($form['vlink_color']) ? ('color: ' . htmlspecialchars($form['vlink_color']) . ';') : NULL;
+	
 	print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 	print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">\n";
 	print "<head>\n";
 	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\" />\n";
 	print "  <meta name=\"robots\" content=\"noindex,nofollow\" />\n";
-	print "  <title>" . $form["title"] . "</title>\n";
+	print "  <title>" . htmlspecialchars($form['title']) . "</title>\n";
 	print "  <style type=\"text/css\">\n";
-	print "    BODY {" . $form['bgcolor'] . ' ' . $form['text_color'] . "}\n";
-	if (isset($form['link_color']))
-		print "    A {" . $form['link_color'] . "}\n";
-	if (isset($form['alink_color']))
-		print "    A:active {" . $form['alink_color'] . "}\n";
-	if (isset($form['vlink_color']))
-		print "    A:visited {" . $form['vlink_color'] . "}\n";
-	print "    .title {font-size: 14pt; font-weight: bold; margin-bottom: 20pt}\n";
+	print "    BODY {" . trim($bgcolor . ' ' . $text_color . ' ' . $background) . "}\n";
+	if (isset($link_color))
+		print "    A {" . $link_color . "}\n";
+	if (isset($alink_color))
+		print "    A:active {" . $alink_color . "}\n";
+	if (isset($vlink_color))
+		print "    A:visited {" . $vlink_color . "}\n";
+	print "    h1 {font-size: 14pt; font-weight: bold; margin-bottom: 20pt}\n";
 	print "    .crit {font-size: 12pt; font-weight: bold; color: #F00; margin-bottom: 10pt;}\n";
 	print "    .returnlink {font-size: 12pt; margin-top: 20pt; margin-bottom: 20pt;}\n";
 	print "    .validbutton {margin-top: 20pt; margin-bottom: 20pt;}\n";
 	print "  </style>\n";
 	if (isset($form['css']))
-		print "  <link rel=\"stylesheet\" href=\"" . $form['css'] . "\">\n";
+		print "  <link rel=\"stylesheet\" href=\"" . htmlspecialchars($form['css']) . "\">\n";
 	print "</head>\n\n";
 	print "<body>\n";
 	print "<!-- PHPFormMail " . VERSION . " from http://www.boaddrink.com -->\n";
@@ -446,12 +494,6 @@ $form = decode_vars();
 
 if (count($form) > 0) {
 	
-	$form['bgcolor']	= isset($form['bgcolor']) ? ('background-color: ' . $form['bgcolor'] . ';') : ('background-color: #FFF;');
-	$form['text_color']	= isset($form['text_color']) ? ('color: ' . $form['text_color'] . ';') : ('color: #000;');
-	$form['link_color']	= isset($form['link_color']) ? ('color: ' . $form['link_color'] . ';') : NULL;
-	$form['alink_color']	= isset($form['alink_color']) ? ('color: ' . $form['alink_color'] . ';') : NULL;
-	$form['vlink_color']	= isset($form['vlink_color']) ? ('color: ' . $form['vlink_color'] . ';') : NULL;
-	
 	// PFMA remove if block
 	// Determine (based on the PHP version) if we should use the native
 	// PHP4 in_array or the coded fake_in_array
@@ -461,26 +503,41 @@ if (count($form) > 0) {
 	else
 		$in_array_func = 'fake_in_array';
 
-	alias_fields();
+	if($use_field_alias = isset($form['alias']))
+		alias_fields();
+	
+	// If the $recipient_array has any entries at the top of this script set the variable to true
+	// This is used to save some CPU time later by only checking a boolean and not doing a function
+	// call each time we need to check if we are to use the $recipient_array
+	$use_recipient_array = (count($recipient_array) > 0);
+	
 	if(CHECK_REFERER == true)
 		check_referer($referers);
 	else
 		error_log('[PHPFormMail] HTTP_REFERER checking is turned off.  Referer: ' . getenv('HTTP_REFERER') . '; Client IP: ' . getenv('REMOTE_ADDR') . ';', 0);
-	if (isset($form['recipient']))
-		check_recipients($recipients, $form['recipient']);
-	if (isset($form['recipient_cc']))
-		check_recipients($recipients, $form['recipient_cc']);
-	if (isset($form['recipient_bcc']))
-		check_recipients($recipients, $form['recipient_bcc']);
+	
+	// I added this conditional so the $recipient_function will only be called if we are supposed
+	// to check the referer or we need to call map_recipients (it makes no sense to run four
+	// conditionals with a possible calling of three functions if they arent needed).
+	if((CHECK_REFERER == true) || ($use_recipient_array == true)) {
+		
+		// This is used for another variable function call
+		if ($use_recipient_array == true)
+			$recipient_function = 'map_recipients';
+		else
+			$recipient_function = 'check_recipients';
+		
+		if (isset($form['recipient']))
+			$form['recipient'] = $recipient_function($form['recipient']);
+		if (isset($form['recipient_cc']))
+			$form['recipient_cc'] = $recipient_function($form['recipient_cc']);
+		if (isset($form['recipient_bcc']))
+			$form['recipient_bcc'] = $recipient_function($form['recipient_bcc']);
+	}
+	
 	check_required();
 
 	if (!$errors) {
-		if (!isset($form['subject']))
-			$form['subject'] = 'WWW Form Submission';
-		if (!isset($form['email']))
-			$form['email'] = 'email@example.com';
-		if (!isset($form['mail_newline']))
-			$form['mail_newline'] = 1;
 
 		if (isset($form['sort']))
 			sort_fields();
@@ -501,14 +558,20 @@ if (count($form) > 0) {
 			} else {
 				if (!isset($form['title']))
 					$form['title'] = 'PHPFormMail - Form Results';
-				$output = "<div class=\"title\">The following information has been submitted:</div>\n";
+				$output = "<h1>The following information has been submitted:</h1>\n";
 				reset($form);
 				while (list($key,$val) = each($form)) {
-					if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val)))
-						if ((isset($form['hidden'])) && ($in_array_func($key,$form['hidden'])))
-							$output .= '<div class="field"><b>' . htmlspecialchars($fieldname_lookup[$key]) . ":</b> <i>(hidden)</i></div>\n";
+					if ((!$in_array_func($key,$invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
+						$output .= '<div class="field"><b>';
+						if(($use_field_alias) && ($form['alias_method'] != 'email'))
+							$output .= htmlspecialchars($fieldname_lookup[$key]);
 						else
-							$output .= '<div class="field"><b>' . htmlspecialchars($fieldname_lookup[$key]) . ':</b> ' . htmlspecialchars($val) . "</div>\n";
+							$output .= htmlspecialchars($key);
+						if ((isset($form['hidden'])) && ($in_array_func($key,$form['hidden'])))
+							$output .= ":</b> <i>(hidden)</i></div>\n";
+						else
+							$output .= ':</b> ' . nl2br(htmlspecialchars(stripslashes($val))) . "</div>\n";
+					}
 				}
 				if (isset($form['return_link_url']) && isset($form['return_link_title']))
 					$output .= '<div class="returnlink"><a href="' . $form["return_link_url"] . '">'. $form["return_link_title"] . "</a></div>\n";
