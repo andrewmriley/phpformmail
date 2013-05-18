@@ -1,10 +1,10 @@
 <?PHP
 
-define("VERSION","Classic v1.02.0");
+define("VERSION","Classic v1.03.0");
 
 #############################################################################
 # PHPFormMail - Something we've allways had...				    #
-# Copyright (c) 1999 Andrew Riley (boad@boaddrink.com)			    #
+# Copyright (c) 1999 Andrew Riley (webmaster@boaddrink.com)		    #
 #									    #
 # This program is free software; you can redistribute it and/or 	    #
 # modify it under the terms of the GNU General Public License		    #
@@ -36,7 +36,7 @@ define("VERSION","Classic v1.02.0");
 # $referers allows forms to be located only on servers which are defined    #
 # in this field.							    #
 
-$referers = array("127.0.0.1","boaddrink.com","www.boaddrink.com");
+$referers = array("example.com","www.example.com");
 
 $valid_env = array("REMOTE_HOST", "REMOTE_ADDR", "REMOTE_USER", "HTTP_USER_AGENT");
 
@@ -49,8 +49,17 @@ $invis_array = array("recipient","subject","required","redirect",
 		     "text_color","link_color","alink_color",
 		     "vlink_color","background","subject","title",
 		     "link","css","return_link_title",
-		     "return_link_url");
+		     "return_link_url","recipient_cc","recipient_bcc",
+                     "priority");
 
+
+/****************************************************************
+ * Due to PHP3 not having a function to find if an		*
+ * element is in an array, I created a native version		*
+ * of in_array that mimics PHP4's in_array function.		*
+ * You sould only uncomment this function if you use		*
+ * PHP3.  If you uncomment it in PHP4, you'll get errors.	*
+ ****************************************************************/
 
 // START removing the /* and */ for PHP 3.X
 
@@ -66,12 +75,25 @@ $invis_array = array("recipient","subject","required","redirect",
 
 // STOP removing the /* and */ for PHP 3.X
 
+
+/****************************************************************
+ * fill_data() is a gernic function to assign data.		*
+ ****************************************************************/
+
 function fill_data(&$from,$to,$tag=""){
 	if(!$from)
 		$from = $to;
 	if($tag)
-		$from = " " . $tag . "=\"" . $from . "\"";
+		$from = " " . $tag . ": " . $from . ";";
 }
+
+
+/****************************************************************
+ * check_referer() breaks up the enviromental variable		*
+ * HTTP_REFERER by "/" and then checks to see if the second	*
+ * member of the array (from the explode) matches any of the	*
+ * domains listed in the $referers array (declaired at top)	*
+ ****************************************************************/
 
 function check_referer($referers){
 	if (count($referers)){
@@ -87,35 +109,100 @@ function check_referer($referers){
 		return true; //Not a good idea, if empty, it will allow it.
 }
 
+
+/****************************************************************
+ * decode_vars() is used to assign all of the variables passed	*
+ * into the form to a generic variable.  Allthough there are	*
+ * two official form actions, POST and GET, I decided to use	*
+ * this variable method so if more actions are invented, I	*
+ * wouldn't have to change anything.				*
+ *								*
+ * In the first line, the request methood is assigned to	*
+ * $request with HTTP_ and _VARS appended to it.		*
+ * In the second line uses PHPs variable variable.		*
+ * It's basically addressing the variable $HTTP_POST_VARS or	*
+ * $HTTP_GET_VARS and returning that.  Read more about		*
+ * variable variables in the PHP documentation.			*
+ ****************************************************************/
+
 function decode_vars(){
 	$request = "HTTP_" . getenv("REQUEST_METHOD") . "_VARS";
 	global $$request;
 	return $$request;
 }
 
+
+/****************************************************************
+ * error() is our generic error function.			*
+ * When called, it checks for errors in the $errors array and	*
+ * depending on $form["missing_fields_redirect"] will either	*
+ * print out the errors by calling the function output_html()	*
+ * or it will redirect to the location specified in		*
+ * $form["missing_fields_redirect"].				*
+ ****************************************************************/
+
 function error($errors){
-	global $form;
+	global $form, $natural_form;
 	if ($errors){
 		if ($form["missing_fields_redirect"]){
-			Header(  "Location: ". $form["missing_fields_redirect"]);
+			$args = compile_url_args($natural_form);
+			Header(  "Location: ". $form["missing_fields_redirect"] . $args);
 			exit;
 		} else {
+			fill_data($form["title"],"PHPFormMail - Error");
 			$output = "<p class=\"title\">The following errors were found:</p>\n";
 			while (list(,$val) = each ($errors)) {
 				$output .= $val . "<br />\n";
 			}
 			$output .=  "<p>Please use the <a href=\"javascript: history.back();\">back</a> button to correct these errors.</p>\n";
 			output_html($output);
+			exit;
 		}
 	}
 }
 
+
+/****************************************************************
+ * compile_url_args() is used to create the arguments from	*
+ * $form for sending to the "Thank you" and redirected "Error"	*
+ * pages. This allows for the "Thank you/Error" pages to	*
+ * properly report errors and if needed, record the values to a	*
+ * different medium.						*
+ * Function added in 1.03.0					*
+ ****************************************************************/
+
+function compile_url_args($form){
+	$output = "?";
+	while(list($key,$val) = each($form)){
+		if(is_array($val)){
+
+			// I'm not happy with my array support. With the
+			// way I currently have it, it can only handle
+			// 1D arrays.
+
+			while(list($key1,$val1) = each($val)){
+				$output .= urlencode($key ."[" . $key1 . "]") . "=" . urlencode($val1) . "&";
+			}
+		} else
+			$output .= urlencode($key) . "=" . urlencode($val) . "&";
+	}
+	return substr($output,0,-1);
+}
+
+
+/****************************************************************
+ * check_required() is the function that checks all required	*
+ * fields to see if they are empty or match the provided regex	*
+ * string (regex checking added in 1.02.0).			*
+ *								*
+ * Should a required variable be empty or not match the regex	*
+ * pattern, a error will be added to the global $errors array.	*
+ ****************************************************************/
+
 function check_required(){
-	global $form;
-	global $errors;
-	global $invis_array;
+	global $form, $errors, $invis_array;
 	$problem = true;
-	if (!$form["recipient"]) {
+	if ((!$form["recipient"]) && (!$form["recipient_bcc"])) {
 		$problem = false;
 		$errors[] = "There is no recipient to send this mail to.";
 	}
@@ -126,7 +213,7 @@ function check_required(){
 			if(!$form[$val]){
 				$problem = false;
 				$errors[] = "Required value (<b>" . $val . "</b>) is missing.";
-			} else	if(isset($form[$regex_field_name])){
+			} else if(isset($form[$regex_field_name])){
 				if(!eregi($form[$regex_field_name],$form[$val])){
 					$problem = false;
 					$errors[] = "Required value (<b>" . $val . "</b>) has an invalid format.";
@@ -137,6 +224,23 @@ function check_required(){
 	}
 	return $problem;
 }
+
+
+/****************************************************************
+ * sort_fields() is responsable for sorting all fields in $form	*
+ * depending $form["sort"].					*
+ * There are three main sort methods: alphabetic, reverse	*
+ * alphabetic, and user supplied.				*
+ *								*
+ * The user supplied method is formatted "order:name,email,etc".*
+ * The text "order" is required and the fields are comma	*
+ * sepperated. ("order" is legacy from the PERL version.) If	*
+ * the user supplied method leaves fields out of the comma	*
+ * sepperated list, the remaining fields will be appended to	*
+ * the end of the orderd list in the order they appear in the	*
+ * form.							*
+ * Function added in 1.02.0					*
+ ****************************************************************/
 
 function sort_fields(){
 	global $form;
@@ -160,10 +264,14 @@ function sort_fields(){
 	return true;
 }
 
+
+/****************************************************************
+ * send_mail() the function that parses the data into SMTP	*
+ * format and sends the e-mail.					*
+ ****************************************************************/
+
 function send_mail(){
-	global $form;
-	global $invis_array;
-	global $valid_env;
+	global $form, $invis_array, $valid_env;
 	$mailbody = "Below is the result of your feedback form.  It was submitted by\n";
 	$mailbody.= $form["realname"]. " (" .$form["email"].") on " . date("F dS, Y") ."\n\n";
 
@@ -185,12 +293,38 @@ function send_mail(){
 		}
 	}
 
-	$mail_status = @mail($form["recipient"],$form["subject"],$mailbody,"From: " .$form["email"]. " (" .$form["realname"]. ")\nX-Mailer: PHPFormMail " . VERSION . " (http://www.boaddrink.com)");
+	// Append lines to $mail_header that you wish to be
+	// added to the headers of the e-mail. (SMTP Format
+	// with newline char ending each line)
+
+	$mail_header = "From: " .$form["email"]. " (" .$form["realname"]. ")\n";
+	if($form["recipient_cc"])
+		$mail_header .= "Cc: " . $form["recipient_cc"] . "\n";
+	if($form["recipient_bcc"])
+		$mail_header .= "Bcc: " . $form["recipient_bcc"] . "\n";
+	if($form["priority"])
+		$mail_header .= "X-Priority: " . $form["priority"] . "\n";
+	else
+		$mail_header .= "X-Priority: 3\n"; 
+	$mail_header .= "X-Mailer: PHPFormMail " . VERSION . " (http://www.boaddrink.com)\n";
+
+	$mail_status = mail($form["recipient"],$form["subject"],$mailbody,$mail_header);
 	if(!$mail_status){
-		 $errors[] = "Mail could not be sent due to mailserver configuration problems.";
-                 error_log("[PHPFormMail] Mail could not be sent due to mailserver configuration problems.");
+		 $errors[] = "Mail could not be sent due to an error while trying to send the mail.";
+                 error_log("[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.");
 	}
 }
+
+
+/****************************************************************
+ * output_html() is used to output all HTML to the browser.	*
+ * This function is called if there is an error or for the	*
+ * "Thank You" page if neither are declaired as redirects.	*
+ *								*
+ * While called output_html() it actually outputs valid XHTML	*
+ * 1.0 documents.						*
+ * Function added in 1.02.0					*
+ ****************************************************************/
 
 function output_html($body){
 	global $form;
@@ -200,12 +334,19 @@ function output_html($body){
 	print "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\" />\n";
 	print "  <title>" . $form["title"] . "</title>\n";
 	print "  <style type=\"text/css\">\n";
+	print "    BODY {" . $form["bgcolor"] . $form["text_color"] . $form["background"] . "}\n";
+	if($form["link_color"])
+		print "    A {" . $form["link_color"] . $form["bgcolor"] . "}\n";
+	if($form["alink_color"])
+		print "    A:active {" . $form["alink_color"] . $form["bgcolor"] . "}\n";
+	if($form["vlink_color"])
+		print "    A:visited {" . $form["vlink_color"] . $form["bgcolor"] . "}\n";
 	print "    .title {font-size: 12pt; font-weight: bold}\n";
 	print "  </style>\n";
 	if($form["css"])
 		print "  <link rel=\"stylesheet\" href=\"" . $form["css"] . "\">\n";
 	print "</head>\n\n";
-	print "<body" . $form["bgcolor"] . $form["text_color"] . $form["link_color"] . $form["alink_color"] . $form["vlink_color"] . $form["background"] . ">\n";
+	print "<body>\n";
 	print "<!-- PHPFormMail " . VERSION . " from http://www.boaddrink.com -->\n";
 	print $body;
 	print "<p>\n";
@@ -215,18 +356,27 @@ function output_html($body){
 	print "</html>";
 }
 
-$form = decode_vars();
-fill_data($form["bgcolor"],"#FFFFFF","bgcolor");
-fill_data($form["text_color"],"#000000","text");
-fill_data($form["link_color"],"#0000FF","link");
-fill_data($form["alink_color"],"#FF0000","alink");
-fill_data($form["vlink_color"],"#000099","vlink");
-fill_data($form["background"],"","background");
-fill_data($form["title"],"Form Results");
+// $form is array we work with.
+// $natural_form is the array that does not get changed.
+// This is for redirects that need the data in an origional form.
+
+$form = $natural_form = decode_vars();
+
+fill_data($form["bgcolor"],"#FFFFFF","background-color");
+fill_data($form["text_color"],"#000000","color");
+
+if($form["link_color"])
+	fill_data($form["link_color"],NULL,"color");
+if($form["alink_color"])
+	fill_data($form["alink_color"],NULL,"color");
+if($fomr["vlink_color"])
+	fill_data($form["vlink_color"],NULL,"color");
+if($form["background"])
+	fill_data($form["background"],NULL,"background");
 
 if(check_referer($referers) && check_required()){
 	fill_data($form["subject"],"WWW Form Submission");
-	fill_data($form["email"],"exampleemail@example.com");
+	fill_data($form["email"],"email@example.com");
 	fill_data($form["realname"],"Unknown Stranger");
 
 	if($form["sort"])
@@ -235,9 +385,11 @@ if(check_referer($referers) && check_required()){
 	send_mail();
 
 	if ($form["redirect"]){
-		Header("Location: ".$form["redirect"]);
+		$args = compile_url_args($natural_form);
+		Header("Location: " . $form["redirect"] . $args);
 		exit;
 	} else {
+		fill_data($form["title"],"PHPFormMail - Form Results");
 		$output = "<p class=\"title\">The following information has been submitted:</p>\n";
 		reset($form);
 		while(list($key,$val) = each($form)){
