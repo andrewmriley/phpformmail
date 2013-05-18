@@ -1,0 +1,1 @@
+See docs/readme_pfm_classic.htm for information on installing/running phpformmail.
