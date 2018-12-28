@@ -194,6 +194,7 @@ function map_recipients($recipient_list)
  ****************************************************************/
 
 function decode_vars() {
+    $output = array();
     if (isset($_REQUEST)) {
         $request = '_' . getenv('REQUEST_METHOD');
     } else {
@@ -207,10 +208,8 @@ function decode_vars() {
             }
             $output[$key] = stripslashes($val);
         }
-        return $output;
-    } else {
-        return array();
     }
+    return $output;
 }
 
 
@@ -224,7 +223,7 @@ function decode_vars() {
  ****************************************************************/
 
 function error() {
-    global $form, $natural_form, $errors;
+    global $form, $errors;
     if (isset($form['missing_fields_redirect'])) {
         if (isset($form['redirect_values'])) {
             header('Location: ' . $form['missing_fields_redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
@@ -315,6 +314,7 @@ function check_required() {
 
 function sort_fields() {
     global $form;
+    $out = array();
     switch ($form['sort']) {
         case 'alphabetic':
         case 'alpha':
@@ -445,7 +445,7 @@ function send_mail() {
     // added to the headers of the e-mail. (SMTP Format
     // with newline char ending each line)
 
-    $mail_header = 'Return-Path: ' . preg_replace($email_replace_array, '', $return_path) . $mail_newline;
+    $mail_header = '';
     if (!is_null(FROM)) {
         $mail_header .= 'From: ' . FROM . $mail_newline;
     }
