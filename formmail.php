@@ -74,7 +74,7 @@ $invis_array = array('recipient', 'subject', 'required', 'redirect',
 
 function fake_in_array($needle, $haystack) {
     $found = false;
-    while (list($key, $val) = each($haystack)) {
+    foreach ($haystack as $val) {
         if ($needle == $val) {
             $found = true;
         }
@@ -95,7 +95,7 @@ function check_referer($referers) {
         if (getenv('HTTP_REFERER')) {
             $temp = explode('/', getenv('HTTP_REFERER'));
             $found = false;
-            while (list(, $stored_referer) = each($referers)) {
+            foreach($referers as $stored_referer) {
                 if (eregi('^' . $stored_referer . '$', $temp[2])) {
                     $found = true;
                 }
@@ -127,11 +127,11 @@ function check_recipients($recipient_list) {
     global $errors, $referers;
     $recipients_ok = true;
     $recipient_list = explode(',', $recipient_list);
-    while (list(, $recipient) = each($recipient_list)) {
+    foreach ($recipient_list as $recipient) {
         $recipient_domain = false;
         $recipient = trim($recipient);
         reset($referers);
-        while ((list(, $stored_domain) = each($referers)) && ($recipient_domain == false)) {
+        foreach ($referers as  $stored_domain) {
             if (eregi('^[_\.a-z0-9-]*@' . $stored_domain . '$', $recipient)) {
                 $recipient_domain = true;
             }
@@ -160,7 +160,7 @@ function map_recipients($recipient_list)
     global $errors, $recipient_array;
     $recipients_ok = true;
     $recipient_list = explode(',', $recipient_list);
-    while (list(, $val) = each($recipient_list)) {
+    foreach ($recipient_list as $val) {
         $val = trim($val);
         if (isset($recipient_array[$val])) {
             $output[] = $recipient_array[$val];
@@ -201,7 +201,7 @@ function decode_vars() {
     }
     global $$request;
     if (count($$request) > 0) {
-        while (list($key, $val) = each($$request)) {
+        foreach ($$request as $key => $val) {
             if (is_array($val)) {
                 $val = implode(', ', $val);
             }
@@ -237,7 +237,7 @@ function error() {
         }
         $output = "<h1>The following errors were found:</h1>\n<ul>\n";
         $crit_error = 0;
-        while (list(, $val) = each($errors)) {
+        foreach ($errors as $val) {
             list($crit, $message) = explode('|', $val);
             $output .= '  <li>' . $message . "</li>\n";
             if ($crit == 1) {
@@ -273,7 +273,7 @@ function check_required() {
     }
     if (isset($form['required'])) {
         $required = split(',', $form['required']);
-        while (list(, $val) = each($required)) {
+        foreach ($required as $val) {
             $val = trim($val);
             $regex_field_name = $val . '_regex';
             if ((!isset($form[$val])) || (isset($form[$val]) && (strlen($form[$val]) < 1))) {
@@ -348,13 +348,13 @@ function sort_fields() {
 
 function alias_fields() {
     global $form, $fieldname_lookup;
-    while (list($key,) = each($form)) {
+    foreach ($form as $key => $val) {
         $fieldname_lookup[$key] = $key;
     }
     reset($form);
     if (isset($form['alias'])) {
         $aliases = explode(',', $form['alias']);
-        while (list(, $val) = each($aliases)) {
+        foreach ($aliases as $val) {
             $temp = explode('=', $val);
             $fieldname_lookup[trim($temp[0])] = trim($temp[1]);
         }
@@ -410,7 +410,7 @@ function send_mail() {
 
     reset($form);
 
-    while (list($key, $val) = each($form)) {
+    foreach ($form as $key => $val) {
         if ((!in_array($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
             if (($form['alias_method'] == 'email') || ($form['alias_method'] == 'both'))
                 $mailbody .= $fieldname_lookup[$key];
@@ -423,7 +423,7 @@ function send_mail() {
     if (isset($form['env_report'])) {
         $temp_env_report = explode(',', $form['env_report']);
         $mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
-        while (list(, $val) = each($temp_env_report)) {
+        foreach ($temp_env_report as $val) {
             if (in_array($val, $valid_env))
                 $mailbody .= eregi_replace($email_replace_array, '', $val) . ': ' . eregi_replace($email_replace_array, '', getenv($val)) . $mail_newline;
         }
@@ -585,7 +585,7 @@ if (count($form) > 0) {
                     $form['title'] = 'PHPFormMail - Form Results';
                 $output = "<h1>The following information has been submitted:</h1>\n";
                 reset($form);
-                while (list($key, $val) = each($form)) {
+                foreach ($form as $key => $val) {
                     if ((!$in_array_func($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
                         $output .= '<div class="field"><b>';
                         if (($use_field_alias) && ($form['alias_method'] != 'email'))
