@@ -884,12 +884,12 @@ hr { margin-bottom: 2em; }
     <td class="sectionleft">Description:</td>
     <td>Allows for regular expression comparisons on form results. For a field to be checked, it must also be listed in <a href="#required">required</a>.
       <p>To check a field, append _regex to the hidden field name.</p>
-      <p>Note: This function uses <a href="http://www.php.net/manual/en/function.eregi.php" target="_blank">eregi()</a> so you must use postix regular expressions.</p></td>
+      <p>Note: This function uses <a href="https://secure.php.net/manual/en/function.preg-match.php" target="_blank">preg_match()</a> so you must use postix regular expressions.</p></td>
   </tr>
   <tr>
     <td class="sectionleft">Syntax:</td>
     <td>To check that the date field is in propper date format:
-      <p class="code">&lt;input type=&quot;hidden&quot; name="date_regex" value="$[0-9{4}-[0-9]{2}-[0-9]{2}$"&gt;</p></td>
+      <p class="code">&lt;input type=&quot;hidden&quot; name="date_regex" value="/$[0-9{4}-[0-9]{2}-[0-9]{2}$/"&gt;</p></td>
   </tr>
   <tr>
     <td class="sectionleft">Valid Values: </td>

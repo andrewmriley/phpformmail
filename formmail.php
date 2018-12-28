@@ -96,7 +96,7 @@ function check_referer($referers) {
             $temp = explode('/', getenv('HTTP_REFERER'));
             $found = false;
             foreach($referers as $stored_referer) {
-                if (eregi('^' . $stored_referer . '$', $temp[2])) {
+                if (preg_match('/^' . $stored_referer . '$/i', $temp[2])) {
                     $found = true;
                 }
             }
@@ -132,7 +132,7 @@ function check_recipients($recipient_list) {
         $recipient = trim($recipient);
         reset($referers);
         foreach ($referers as  $stored_domain) {
-            if (eregi('^[_\.a-z0-9-]*@' . $stored_domain . '$', $recipient)) {
+            if (preg_match('/^[_\.a-z0-9-]*@' . $stored_domain . '$/i', $recipient)) {
                 $recipient_domain = true;
             }
         }
@@ -285,7 +285,7 @@ function check_required() {
                 }
                 $errors[] = '0|Required value (<b>' . $field . '</b>) is missing.';
             } elseif (isset($form[$regex_field_name])) {
-                if (!eregi($form[$regex_field_name], $form[$val])) {
+                if (!preg_match($form[$regex_field_name], $form[$val])) {
                     $problem = false;
                     $errors[] = '0|Required value (<b>' . $fieldname_lookup[$val] . '</b>) has an invalid format.';
                 }
@@ -371,7 +371,7 @@ function alias_fields() {
 function send_mail() {
     global $form, $invis_array, $valid_env, $fieldname_lookup, $errors;
 
-    $email_replace_array = "\r|\n|to:|cc:|bcc:";
+    $email_replace_array = '/\r|\n|to:|cc:|bcc:/i';
 
     if (!isset($form['subject'])) {
         $form['subject'] = 'WWW Form Submission';
@@ -394,7 +394,7 @@ function send_mail() {
             $mail_newline = "\n";
     }
 
-    if (isset($form['gmt_offset']) && ereg('^(\\-|\\+)?([0-9]{1}|(1{1}[0-2]{1}))$', $form['gmt_offset'])) {
+    if (isset($form['gmt_offset']) && preg_match('/^(\\-|\\+)?([0-9]{1}|(1{1}[0-2]{1}))$/', $form['gmt_offset'])) {
         $mkseconds = mktime(gmdate('H') + $form['gmt_offset']);
         $mail_date = gmdate('F jS, Y', $mkseconds) . ' at ' . gmdate('h:iA', $mkseconds) . ' (GMT ' . $form['gmt_offset'] . ').';
     } else {
@@ -402,9 +402,9 @@ function send_mail() {
     }
 
     if (isset($form['realname'])) {
-        $realname = eregi_replace($email_replace_array, '', $form['realname']);
+        $realname = preg_replace($email_replace_array, '', $form['realname']);
     } elseif (isset($form['firstname']) || isset($form['lastname'])) {
-        $realname = eregi_replace($email_replace_array, '', trim($form['firstname'] . ' ' . $form['lastname']));
+        $realname = preg_replace($email_replace_array, '', trim($form['firstname'] . ' ' . $form['lastname']));
     }
 
     $mailbody = 'Below is the result of your feedback form.  It was submitted by' . $mail_newline;
@@ -432,7 +432,7 @@ function send_mail() {
         $mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
         foreach ($temp_env_report as $val) {
             if (in_array($val, $valid_env)) {
-                $mailbody .= eregi_replace($email_replace_array, '', $val) . ': ' . eregi_replace($email_replace_array, '', getenv($val)) . $mail_newline;
+                $mailbody .= preg_replace($email_replace_array, '', $val) . ': ' . preg_replace($email_replace_array, '', getenv($val)) . $mail_newline;
             }
         }
     }
@@ -445,36 +445,36 @@ function send_mail() {
     // added to the headers of the e-mail. (SMTP Format
     // with newline char ending each line)
 
-    $mail_header = 'Return-Path: ' . eregi_replace($email_replace_array, '', $return_path) . $mail_newline;
+    $mail_header = 'Return-Path: ' . preg_replace($email_replace_array, '', $return_path) . $mail_newline;
     if (!is_null(FROM)) {
         $mail_header .= 'From: ' . FROM . $mail_newline;
     }
     $mail_header .= 'Reply-to: ';
     if (isset($realname)) {
-        $mail_header .= $realname . ' <' . eregi_replace($email_replace_array, '', $form['email']) . '>' . $mail_newline;
+        $mail_header .= $realname . ' <' . preg_replace($email_replace_array, '', $form['email']) . '>' . $mail_newline;
     } else {
-        $mail_header .= eregi_replace($email_replace_array, '', $form['email']) . $mail_newline;
+        $mail_header .= preg_replace($email_replace_array, '', $form['email']) . $mail_newline;
     }
     if (isset($form['recipient_cc'])) {
-        $mail_header .= 'Cc: ' . eregi_replace($email_replace_array, '', $form['recipient_cc']) . $mail_newline;
+        $mail_header .= 'Cc: ' . preg_replace($email_replace_array, '', $form['recipient_cc']) . $mail_newline;
     }
     if (isset($form['recipient_bcc'])) {
-        $mail_header .= 'Bcc: ' . eregi_replace($email_replace_array, '', $form['recipient_bcc']) . $mail_newline;
+        $mail_header .= 'Bcc: ' . preg_replace($email_replace_array, '', $form['recipient_bcc']) . $mail_newline;
     }
     if (isset($form['priority'])) {
-        $mail_header .= 'X-Priority: ' . ereg_replace($email_replace_array, '', $form['priority']) . $mail_newline;
+        $mail_header .= 'X-Priority: ' . preg_replace($email_replace_array, '', $form['priority']) . $mail_newline;
     } else {
         $mail_header .= 'X-Priority: 3' . $mail_newline;
     }
     $mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . ' (http://www.boaddrink.com)' . $mail_newline;
-    $mail_header .= 'X-Sender-IP: ' . eregi_replace($email_replace_array, '', getenv('REMOTE_ADDR')) . $mail_newline;
-    $mail_header .= 'X-Referer: ' . eregi_replace($email_replace_array, '', getenv('HTTP_REFERER')) . $mail_newline;
+    $mail_header .= 'X-Sender-IP: ' . preg_replace($email_replace_array, '', getenv('REMOTE_ADDR')) . $mail_newline;
+    $mail_header .= 'X-Referer: ' . preg_replace($email_replace_array, '', getenv('HTTP_REFERER')) . $mail_newline;
 
-    $form['subject'] = eregi_replace($email_replace_array, '', $form['subject']);
+    $form['subject'] = preg_replace($email_replace_array, '', $form['subject']);
 
-    if (eregi("MIME-|Content-|boundary", $mail_header . $mailbody . $form['subject']) == 0) {
+    if (preg_match("/MIME-|Content-|boundary/i", $mail_header . $mailbody . $form['subject']) == 0) {
         $mail_header .= 'Content-Type: text/plain; charset=utf-8' . $mail_newline;
-        $mail_status = mail(eregi_replace($email_replace_array, '', $form['recipient']), $form['subject'], $mailbody, $mail_header);
+        $mail_status = mail(preg_replace($email_replace_array, '', $form['recipient']), $form['subject'], $mailbody, $mail_header);
         if (!$mail_status) {
             $errors[] = '1|Message could not be sent due to an error while trying to send the mail.';
             error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
