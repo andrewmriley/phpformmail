@@ -251,18 +251,14 @@ function check_required() {
         foreach ($required as $val) {
             $val = trim($val);
             $regex_field_name = $val . '_regex';
+            $field = isset($fieldname_lookup[$val]) ? $fieldname_lookup[$val] : $val;
             if ((!isset($form[$val])) || (isset($form[$val]) && (strlen($form[$val]) < 1))) {
                 $problem = false;
-                if (isset($fieldname_lookup[$val])) {
-                    $field = $fieldname_lookup[$val];
-                } else {
-                    $field = $val;
-                }
                 $errors[] = '0|Required value (<b>' . $field . '</b>) is missing.';
             } elseif (isset($form[$regex_field_name])) {
                 if (!preg_match($form[$regex_field_name], $form[$val])) {
                     $problem = false;
-                    $errors[] = '0|Required value (<b>' . $fieldname_lookup[$val] . '</b>) has an invalid format.';
+                    $errors[] = '0|Required value (<b>' . $field . '</b>) has an invalid format.';
                 }
                 $invis_array[] = $regex_field_name;
             }
