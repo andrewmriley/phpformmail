@@ -144,7 +144,7 @@ function check_recipients($recipient_list) {
     if (!$recipients_ok) {
         $errors[] = '1|You are trying to send mail to a domain that is not in the allowed recipients list.   Please read the manual section titled &quot;<a href="' . MANUAL . '#setting_up" target="_blank">Setting Up the PHPFormMail Script</a>&quot;.';
     }
-    return join(',', $recipient_list);
+    return implode(',', $recipient_list);
 }
 
 /****************************************************************
@@ -172,7 +172,7 @@ function map_recipients($recipient_list)
         $errors[] = '1|You are trying to send mail to an address that is not listed in the recipient array.';
     }
     if (isset($output)) {
-        return join(',', $output);
+        return implode(',', $output);
     } else {
         return null;
     }
@@ -272,7 +272,7 @@ function check_required() {
         error_log('[PHPFormMail] There is no recipient defined from ' . getenv('HTTP_REFERER'), 0);
     }
     if (isset($form['required'])) {
-        $required = split(',', $form['required']);
+        $required = explode(',', $form['required']);
         foreach ($required as $val) {
             $val = trim($val);
             $regex_field_name = $val . '_regex';
@@ -284,7 +284,7 @@ function check_required() {
                     $field = $val;
                 }
                 $errors[] = '0|Required value (<b>' . $field . '</b>) is missing.';
-            } else if (isset($form[$regex_field_name])) {
+            } elseif (isset($form[$regex_field_name])) {
                 if (!eregi($form[$regex_field_name], $form[$val])) {
                     $problem = false;
                     $errors[] = '0|Required value (<b>' . $fieldname_lookup[$val] . '</b>) has an invalid format.';
@@ -373,12 +373,15 @@ function send_mail() {
 
     $email_replace_array = "\r|\n|to:|cc:|bcc:";
 
-    if (!isset($form['subject']))
+    if (!isset($form['subject'])) {
         $form['subject'] = 'WWW Form Submission';
-    if (isset($form['subject_prefix']))
+    }
+    if (isset($form['subject_prefix'])) {
         $form['subject'] = $form['subject_prefix'] . $form['subject'];
-    if (!isset($form['email']))
+    }
+    if (!isset($form['email'])) {
         $form['email'] = 'email@example.com';
+    }
 
     switch ($form['mail_newline']) {
         case 2:
@@ -394,28 +397,32 @@ function send_mail() {
     if (isset($form['gmt_offset']) && ereg('^(\\-|\\+)?([0-9]{1}|(1{1}[0-2]{1}))$', $form['gmt_offset'])) {
         $mkseconds = mktime(gmdate('H') + $form['gmt_offset']);
         $mail_date = gmdate('F jS, Y', $mkseconds) . ' at ' . gmdate('h:iA', $mkseconds) . ' (GMT ' . $form['gmt_offset'] . ').';
-    } else
+    } else {
         $mail_date = date('F jS, Y') . ' at ' . date('h:iA (T).');
+    }
 
-    if (isset($form['realname']))
+    if (isset($form['realname'])) {
         $realname = eregi_replace($email_replace_array, '', $form['realname']);
-    elseif (isset($form['firstname']) || isset($form['lastname']))
+    } elseif (isset($form['firstname']) || isset($form['lastname'])) {
         $realname = eregi_replace($email_replace_array, '', trim($form['firstname'] . ' ' . $form['lastname']));
+    }
 
     $mailbody = 'Below is the result of your feedback form.  It was submitted by' . $mail_newline;
-    if (isset($realname))
+    if (isset($realname)) {
         $mailbody .= $realname . ' (' . $form['email'] . ') on ' . $mail_date . $mail_newline . $mail_newline;
-    else
+    } else {
         $mailbody .= $form['email'] . ' on ' . $mail_date . $mail_newline . $mail_newline;
+    }
 
     reset($form);
 
     foreach ($form as $key => $val) {
         if ((!in_array($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
-            if (($form['alias_method'] == 'email') || ($form['alias_method'] == 'both'))
+            if (($form['alias_method'] == 'email') || ($form['alias_method'] == 'both')) {
                 $mailbody .= $fieldname_lookup[$key];
-            else
+            } else {
                 $mailbody .= $key;
+            }
             $mailbody .= ': ' . $val . $mail_newline;
         }
     }
@@ -424,34 +431,41 @@ function send_mail() {
         $temp_env_report = explode(',', $form['env_report']);
         $mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
         foreach ($temp_env_report as $val) {
-            if (in_array($val, $valid_env))
+            if (in_array($val, $valid_env)) {
                 $mailbody .= eregi_replace($email_replace_array, '', $val) . ': ' . eregi_replace($email_replace_array, '', getenv($val)) . $mail_newline;
+            }
         }
     }
 
-    if (!isset($form['recipient']))
+    if (!isset($form['recipient'])) {
         $form['recipient'] = '';
+    }
 
     // Append lines to $mail_header that you wish to be
     // added to the headers of the e-mail. (SMTP Format
     // with newline char ending each line)
 
     $mail_header = 'Return-Path: ' . eregi_replace($email_replace_array, '', $return_path) . $mail_newline;
-    if (FROM != null)
+    if (!is_null(FROM)) {
         $mail_header .= 'From: ' . FROM . $mail_newline;
+    }
     $mail_header .= 'Reply-to: ';
-    if (isset($realname))
+    if (isset($realname)) {
         $mail_header .= $realname . ' <' . eregi_replace($email_replace_array, '', $form['email']) . '>' . $mail_newline;
-    else
+    } else {
         $mail_header .= eregi_replace($email_replace_array, '', $form['email']) . $mail_newline;
-    if (isset($form['recipient_cc']))
+    }
+    if (isset($form['recipient_cc'])) {
         $mail_header .= 'Cc: ' . eregi_replace($email_replace_array, '', $form['recipient_cc']) . $mail_newline;
-    if (isset($form['recipient_bcc']))
+    }
+    if (isset($form['recipient_bcc'])) {
         $mail_header .= 'Bcc: ' . eregi_replace($email_replace_array, '', $form['recipient_bcc']) . $mail_newline;
-    if (isset($form['priority']))
+    }
+    if (isset($form['priority'])) {
         $mail_header .= 'X-Priority: ' . ereg_replace($email_replace_array, '', $form['priority']) . $mail_newline;
-    else
+    } else {
         $mail_header .= 'X-Priority: 3' . $mail_newline;
+    }
     $mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . ' (http://www.boaddrink.com)' . $mail_newline;
     $mail_header .= 'X-Sender-IP: ' . eregi_replace($email_replace_array, '', getenv('REMOTE_ADDR')) . $mail_newline;
     $mail_header .= 'X-Referer: ' . eregi_replace($email_replace_array, '', getenv('HTTP_REFERER')) . $mail_newline;
@@ -503,19 +517,23 @@ function output_html($body) {
     print "  <title>" . htmlspecialchars($form['title']) . "</title>\n";
     print "  <style type=\"text/css\">\n";
     print "    BODY {" . trim($bgcolor . ' ' . $text_color . ' ' . $background) . "}\n";
-    if (isset($link_color))
+    if (isset($link_color)) {
         print "    A {" . $link_color . "}\n";
-    if (isset($alink_color))
+    }
+    if (isset($alink_color)) {
         print "    A:active {" . $alink_color . "}\n";
-    if (isset($vlink_color))
+    }
+    if (isset($vlink_color)) {
         print "    A:visited {" . $vlink_color . "}\n";
+    }
     print "    h1 {font-size: 14pt; font-weight: bold; margin-bottom: 20pt}\n";
     print "    .crit {font-size: 12pt; font-weight: bold; color: #F00; margin-bottom: 10pt;}\n";
     print "    .returnlink {font-size: 12pt; margin-top: 20pt; margin-bottom: 20pt;}\n";
     print "    .validbutton {margin-top: 20pt; margin-bottom: 20pt;}\n";
     print "  </style>\n";
-    if (isset($form['css']))
+    if (isset($form['css'])) {
         print "  <link rel=\"stylesheet\" href=\"" . htmlspecialchars($form['css']) . "\">\n";
+    }
     print "</head>\n\n";
     print "<body>\n";
     print "<!-- PHPFormMail from http://www.boaddrink.com -->\n";
@@ -534,38 +552,46 @@ if (count($form) > 0) {
     // Determine (based on the PHP version) if we should use the native
     // PHP4 in_array or the coded fake_in_array
 
-    if (phpversion() >= '4.0.0')
+    if (phpversion() >= '4.0.0') {
         $in_array_func = 'in_array';
-    else
+    } else {
         $in_array_func = 'fake_in_array';
+    }
 
-    if ($use_field_alias = isset($form['alias']))
+    if ($use_field_alias = isset($form['alias'])) {
         alias_fields();
+    }
 
-    if (CHECK_REFERER == true)
+    if (CHECK_REFERER == true) {
         check_referer($referers);
-    else
+    } else {
         error_log('[PHPFormMail] HTTP_REFERER checking is turned off.  Referer: ' . getenv('HTTP_REFERER') . '; Client IP: ' . getenv('REMOTE_ADDR') . ';', 0);
+    }
 
     // This is used for another variable function call
-    if ((count($recipient_array) > 0) == true)
+    if ((count($recipient_array) > 0) == true) {
         $recipient_function = 'map_recipients';
-    else
+    } else {
         $recipient_function = 'check_recipients';
+    }
 
-    if (isset($form['recipient']))
+    if (isset($form['recipient'])) {
         $form['recipient'] = $recipient_function($form['recipient']);
-    if (isset($form['recipient_cc']))
+    }
+    if (isset($form['recipient_cc'])) {
         $form['recipient_cc'] = $recipient_function($form['recipient_cc']);
-    if (isset($form['recipient_bcc']))
+    }
+    if (isset($form['recipient_bcc'])) {
         $form['recipient_bcc'] = $recipient_function($form['recipient_bcc']);
+    }
 
     check_required();
 
     if (!$errors) {
 
-        if (isset($form['sort']))
+        if (isset($form['sort'])) {
             sort_fields();
+        }
 
         if (isset($form['hidden'])) {
             // PFMA REMOVE 1
@@ -576,30 +602,35 @@ if (count($form) > 0) {
 
         if (send_mail()) {
             if (isset($form['redirect'])) {
-                if (isset($form['redirect_values']))
+                if (isset($form['redirect_values'])) {
                     header('Location: ' . $form['redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
-                else
+                } else {
                     header('Location: ' . $form['redirect'] . "\r\n");
+                }
             } else {
-                if (!isset($form['title']))
+                if (!isset($form['title'])) {
                     $form['title'] = 'PHPFormMail - Form Results';
+                }
                 $output = "<h1>The following information has been submitted:</h1>\n";
                 reset($form);
                 foreach ($form as $key => $val) {
                     if ((!$in_array_func($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
                         $output .= '<div class="field"><b>';
-                        if (($use_field_alias) && ($form['alias_method'] != 'email'))
+                        if (($use_field_alias) && ($form['alias_method'] != 'email')) {
                             $output .= htmlspecialchars($fieldname_lookup[$key]);
-                        else
+                        } else {
                             $output .= htmlspecialchars($key);
-                        if ((isset($form['hidden'])) && ($in_array_func($key, $form['hidden'])))
+                        }
+                        if ((isset($form['hidden'])) && ($in_array_func($key, $form['hidden']))) {
                             $output .= ":</b> <i>(hidden)</i></div>\n";
-                        else
+                        } else {
                             $output .= ':</b> ' . nl2br(htmlspecialchars(stripslashes($val))) . "</div>\n";
+                        }
                     }
                 }
-                if (isset($form['return_link_url']) && isset($form['return_link_title']))
+                if (isset($form['return_link_url']) && isset($form['return_link_title'])) {
                     $output .= '<div class="returnlink"><a href="' . $form["return_link_url"] . '">' . $form["return_link_title"] . "</a></div>\n";
+                }
                 output_html($output);
             }
         }
