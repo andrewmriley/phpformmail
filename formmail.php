@@ -65,24 +65,6 @@ $invis_array = array('recipient', 'subject', 'required', 'redirect',
     'subject_prefix');
 
 /****************************************************************
- * fake_in_array() is only used in PHP3 since PHP4 has a native    *
- * in_array.  Depending on what version of PHP you are running    *
- * the script will determine what is the best function to run    *
- * --- THER IS NO LONGER ANY REASON TO DELETE THIS FUNCTION ---    *
- * Function renamed in 1.04.0                    *
- ****************************************************************/
-
-function fake_in_array($needle, $haystack) {
-    $found = false;
-    foreach ($haystack as $val) {
-        if ($needle == $val) {
-            $found = true;
-        }
-    }
-    return $found;
-}
-
-/****************************************************************
  * check_referer() breaks up the enviromental variable          *
  * HTTP_REFERER by "/" and then checks to see if the second     *
  * member of the array (from the explode) matches any of the    *
@@ -92,8 +74,8 @@ function fake_in_array($needle, $haystack) {
 function check_referer($referers) {
     global $errors;
     if (count($referers)) {
-        if (getenv('HTTP_REFERER')) {
-            $temp = explode('/', getenv('HTTP_REFERER'));
+        if ($_SERVER['HTTP_REFERER']) {
+            $temp = explode('/', $_SERVER['HTTP_REFERER']);
             $found = false;
             foreach($referers as $stored_referer) {
                 if (preg_match('/^' . $stored_referer . '$/i', $temp[2])) {
@@ -102,12 +84,12 @@ function check_referer($referers) {
             }
             if (!$found) {
                 $errors[] = '1|You are coming from an unauthorized domain.  Please read the manual section titled &quot;<a href="' . MANUAL . '#setting_up" target="_blank">Setting Up the PHPFormMail Script</a>&quot;.';
-                error_log('[PHPFormMail] Illegal Referer. (' . getenv('HTTP_REFERER') . ')', 0);
+                error_log('[PHPFormMail] Illegal Referer. (' . $_SERVER['HTTP_REFERER'] . ')', 0);
             }
             return $found;
         } else {
             $errors[] = '0|Sorry, but I cannot figure out who sent you here.  Your browser is not sending an HTTP_REFERER.  This could be caused by a firewall or browser that removes the HTTP_REFERER from each HTTP request you submit.';
-            error_log('[PHPFormMail] HTTP_REFERER not defined. Browser: ' . getenv('HTTP_USER_AGENT') . '; Client IP: ' . getenv('REMOTE_ADDR') . '; Request Method: ' . getenv('REQUEST_METHOD') . ';', 0);
+            error_log('[PHPFormMail] HTTP_REFERER not defined. Browser: ' . $_SERVER['HTTP_USER_AGENT'] . '; Client IP: ' . $_SERVER['REMOTE_ADDR'] . '; Request Method: ' . $_SERVER['REQUEST_METHOD'] . ';', 0);
             return false;
         }
     } else {
@@ -138,7 +120,7 @@ function check_recipients($recipient_list) {
         }
         if ($recipient_domain == false) {
             $recipients_ok = false;
-            error_log('[PHPFormMail] Illegal Recipient: ' . $recipient . ' from ' . getenv('HTTP_REFERER'), 0);
+            error_log('[PHPFormMail] Illegal Recipient: ' . $recipient . ' from ' . $_SERVER['HTTP_REFERER'], 0);
         }
     }
     if (!$recipients_ok) {
@@ -195,14 +177,8 @@ function map_recipients($recipient_list)
 
 function decode_vars() {
     $output = array();
-    if (isset($_REQUEST)) {
-        $request = '_' . getenv('REQUEST_METHOD');
-    } else {
-        $request = 'HTTP_' . getenv('REQUEST_METHOD') . '_VARS';
-    }
-    global $$request;
-    if (count($$request) > 0) {
-        foreach ($$request as $key => $val) {
+    if (count($_REQUEST) > 0) {
+        foreach ($_REQUEST as $key => $val) {
             if (is_array($val)) {
                 $val = implode(', ', $val);
             }
@@ -226,7 +202,7 @@ function error() {
     global $form, $errors;
     if (isset($form['missing_fields_redirect'])) {
         if (isset($form['redirect_values'])) {
-            header('Location: ' . $form['missing_fields_redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
+            header('Location: ' . $form['missing_fields_redirect'] . '?' . $_SERVER['QUERY_STRING'] . "\r\n");
         } else {
             header('Location: ' . $form['missing_fields_redirect'] . "\r\n");
         }
@@ -268,7 +244,7 @@ function check_required() {
     if ((!isset($form['recipient'])) && (!isset($form['recipient_bcc']))) {
         $problem = false;
         $errors[] = '1|There is no recipient to send this mail to.  Please read the manual section titled &quot;<a href="' . MANUAL . '#recipient" target="_blank">Form Configuration - Recipient</a>&quot;.';
-        error_log('[PHPFormMail] There is no recipient defined from ' . getenv('HTTP_REFERER'), 0);
+        error_log('[PHPFormMail] There is no recipient defined from ' . $_SERVER['HTTP_REFERER'], 0);
     }
     if (isset($form['required'])) {
         $required = explode(',', $form['required']);
@@ -432,7 +408,7 @@ function send_mail() {
         $mailbody .= $mail_newline . $mail_newline . '-------- Env Report --------' . $mail_newline;
         foreach ($temp_env_report as $val) {
             if (in_array($val, $valid_env)) {
-                $mailbody .= preg_replace($email_replace_array, '', $val) . ': ' . preg_replace($email_replace_array, '', getenv($val)) . $mail_newline;
+                $mailbody .= preg_replace($email_replace_array, '', $val) . ': ' . preg_replace($email_replace_array, '', $_SERVER[$val]) . $mail_newline;
             }
         }
     }
@@ -467,8 +443,8 @@ function send_mail() {
         $mail_header .= 'X-Priority: 3' . $mail_newline;
     }
     $mail_header .= 'X-Mailer: PHPFormMail ' . VERSION . ' (http://www.boaddrink.com)' . $mail_newline;
-    $mail_header .= 'X-Sender-IP: ' . preg_replace($email_replace_array, '', getenv('REMOTE_ADDR')) . $mail_newline;
-    $mail_header .= 'X-Referer: ' . preg_replace($email_replace_array, '', getenv('HTTP_REFERER')) . $mail_newline;
+    $mail_header .= 'X-Sender-IP: ' . preg_replace($email_replace_array, '', $_SERVER['REMOTE_ADDR']) . $mail_newline;
+    $mail_header .= 'X-Referer: ' . preg_replace($email_replace_array, '', $_SERVER['HTTP_REFERER']) . $mail_newline;
 
     $form['subject'] = preg_replace($email_replace_array, '', $form['subject']);
 
@@ -479,11 +455,11 @@ function send_mail() {
             $errors[] = '1|Message could not be sent due to an error while trying to send the mail.';
             error_log('[PHPFormMail] Mail could not be sent due to an error while trying to send the mail.');
         } else {
-            error_log('[PHPFormMail] Normal e-mail sent from IP ' . getenv('REMOTE_ADDR'));
+            error_log('[PHPFormMail] Normal e-mail sent from IP ' . $_SERVER['REMOTE_ADDR']);
         }
     } else {
         $mail_status = true;
-        error_log('[PHPFormMail] Injection characters found from IP ' . getenv('REMOTE_ADDR') . '. Silently dropped');
+        error_log('[PHPFormMail] Injection characters found from IP ' . $_SERVER['REMOTE_ADDR'] . '. Silently dropped');
     }
     return $mail_status;
 }
@@ -547,17 +523,6 @@ function output_html($body) {
 $form = decode_vars();
 
 if (count($form) > 0) {
-
-    // PFMA remove if block
-    // Determine (based on the PHP version) if we should use the native
-    // PHP4 in_array or the coded fake_in_array
-
-    if (phpversion() >= '4.0.0') {
-        $in_array_func = 'in_array';
-    } else {
-        $in_array_func = 'fake_in_array';
-    }
-
     if ($use_field_alias = isset($form['alias'])) {
         alias_fields();
     }
@@ -565,7 +530,7 @@ if (count($form) > 0) {
     if (CHECK_REFERER == true) {
         check_referer($referers);
     } else {
-        error_log('[PHPFormMail] HTTP_REFERER checking is turned off.  Referer: ' . getenv('HTTP_REFERER') . '; Client IP: ' . getenv('REMOTE_ADDR') . ';', 0);
+        error_log('[PHPFormMail] HTTP_REFERER checking is turned off.  Referer: ' . $_SERVER['HTTP_REFERER'] . '; Client IP: ' . $_SERVER['REMOTE_ADDR'] . ';', 0);
     }
 
     // This is used for another variable function call
@@ -603,7 +568,7 @@ if (count($form) > 0) {
         if (send_mail()) {
             if (isset($form['redirect'])) {
                 if (isset($form['redirect_values'])) {
-                    header('Location: ' . $form['redirect'] . '?' . getenv('QUERY_STRING') . "\r\n");
+                    header('Location: ' . $form['redirect'] . '?' . $_SERVER['QUERY_STRING'] . "\r\n");
                 } else {
                     header('Location: ' . $form['redirect'] . "\r\n");
                 }
@@ -614,14 +579,14 @@ if (count($form) > 0) {
                 $output = "<h1>The following information has been submitted:</h1>\n";
                 reset($form);
                 foreach ($form as $key => $val) {
-                    if ((!$in_array_func($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
+                    if ((!in_array($key, $invis_array)) && ((isset($form['print_blank_fields'])) || ($val))) {
                         $output .= '<div class="field"><b>';
                         if (($use_field_alias) && ($form['alias_method'] != 'email')) {
                             $output .= htmlspecialchars($fieldname_lookup[$key]);
                         } else {
                             $output .= htmlspecialchars($key);
                         }
-                        if ((isset($form['hidden'])) && ($in_array_func($key, $form['hidden']))) {
+                        if ((isset($form['hidden'])) && (in_array($key, $form['hidden']))) {
                             $output .= ":</b> <i>(hidden)</i></div>\n";
                         } else {
                             $output .= ':</b> ' . nl2br(htmlspecialchars(stripslashes($val))) . "</div>\n";
@@ -637,7 +602,7 @@ if (count($form) > 0) {
     }
 } else {
     $errors[] = '0|Nothing was sent by a form. (No data was sent by POST or GET method.)  There is nothing to process here.';
-    error_log('[PHPFormMail] No data sent by POST or GET method. (' . getenv('HTTP_REFERER') . ')', 0);
+    error_log('[PHPFormMail] No data sent by POST or GET method. (' . $_SERVER['HTTP_REFERER'] . ')', 0);
 }
 
 if (count($errors) > 0) {
