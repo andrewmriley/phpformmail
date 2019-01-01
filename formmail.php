@@ -1,5 +1,5 @@
 <?PHP
-define('VERSION', 'Classic v1.07.3-beta');
+define('VERSION', 'Classic v1.07.3');
 define('MANUAL', 'http://www.boaddrink.com/projects/phpformmail/readme.php');
 define('CHECK_REFERER', true);
 
