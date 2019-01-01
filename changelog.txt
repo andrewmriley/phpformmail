@@ -1,3 +1,12 @@
+1.07.3 2019/01/01
+---------------------------
++ Made PHP 7.0, 7.1, 7.2, 7.3 compatible
+- Removed PHP3 compatibility
+* Convert outdated while/each to foreach
+* Convert egreg to preg
+- Removed unused variables
+* Fixed error message on regular expression field failures
+
 1.07.2 2005/12/04
 ---------------------------
 + Added the from define to define what address the results email is coming from
